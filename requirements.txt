@@ -1,0 +1,3 @@
+path==15.1.2
+pynmea2==1.18.0
+pyserial==3.5
