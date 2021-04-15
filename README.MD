@@ -1,7 +1,10 @@
-# Capture Raspberry Pi 
+# Capture Raspberry Pi
 
 #### Configuration service  
 Create a file ~/.config/systemd/user/capture.service
+
+Note: modify the user accordingly !
+
 ```
 [Unit]
 Description=Capture service
