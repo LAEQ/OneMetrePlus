@@ -13,7 +13,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/home/pi
-ExecStart=/usr/bin/python script.py
+ExecStart=/usr/bin/python3 script.py
 StandardOutput=append:/home/pi/info.log
 StandardError=append:/home/pi/error.log
 
