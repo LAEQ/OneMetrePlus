@@ -118,18 +118,11 @@ ser3 = serial.Serial(port='/dev/ttyUSB2',baudrate=115200, #ecran
 #Fonctions
 #####################
 def getTFminiDataRef(unit):
-    millis =int(round(time.perf_counter()*1000))
-    time_now = 0
-    if millis > time_now + tfminiperiod:
-        time_now = int(round(time.perf_counter()*1000))
-        recv = ser.read(9)
-        ser.reset_input_buffer()
-        time.sleep (0.02)
-        if recv[0] == 0x59 and recv[1] == 0x59:
-            distance = ((recv[2] + recv[3] * 256)*unit)-(3*unit)
-            #strength = recv[4] + recv[5] * 256
-            #print (distance)
-            return [distance]
+    recv = ser.read(9)
+    ser.reset_input_buffer()
+    if recv[0] == 0x59 and recv[1] == 0x59:
+        distance = ((recv[2] + recv[3] * 256)*unit)
+        return distance
 
 def getTFminiData(unit,distinit):
     recv = ser.read(9)
@@ -395,8 +388,7 @@ if __name__ == '__main__':
 
             if capture==b'capture': #Reading distance of reference
                 ser.open()
-                distance=getTFminiDataRef(unit)
-                distanceref = distance[0]
+                distanceref =getTFminiDataRef(unit)
                 y = b'"%d"'%distanceref
                 if distanceref > 0 and distanceref <= 30:
                     ser3.write(t8+y+eof)
