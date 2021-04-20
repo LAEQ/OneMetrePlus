@@ -55,6 +55,12 @@ systemctl disable bluetooth
 systemctl disable hciuart
 ```
 
+#### List of services to stop & disable
+- cups
+- bluetooth
+- cron 
+- 
+
 ### Wifi card
 ```bash
 ip link set dev eth0 down
