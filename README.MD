@@ -12,10 +12,10 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/david
+WorkingDirectory=/home/pi
 ExecStart=/usr/bin/python script.py
-StandardOutput=append:/home/david/info.log
-StandardError=append:/home/david/error.log
+StandardOutput=append:/home/pi/info.log
+StandardError=append:/home/pi/error.log
 
 Restart=always
 RestartSec=1
