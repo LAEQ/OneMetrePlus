@@ -48,49 +48,58 @@ r2 = 300 #camera resolution
 #Serial Instructions for screen
 #####################
 eof = b'\xff\xff\xff'
-t2 = b't2.txt='
+t2 = b't2.txt=' #text object for distance in the record page
 t8 = b't8.txt='
-t14 = b't14.txt='
-t15 = b't15.txt='
-t16 = b't0.txt='
+t14 = b't14.txt=' #text object for hour in the record page
+t15 = b't15.txt=' #text object for hour in the main menu
+t16 = b't0.txt=' #text object for date in the main menu
 
-P1 = b'p1.pic=0'
-P2=b'p1.pic=2'
+P1 = b'p1.pic=0' #image for recording in the record page (red circle)
+P2=b'p1.pic=2' #image standard for indicator of record (black square)
 
-gp= b'p2.pic=1'
-gp2=b'p2.pic=2'
+gp= b'p2.pic=1' #image for GPS in the record page (target)
+gp2=b'p2.pic=2' #image standard for indicator (black square)
 
-RP1=b'p3.pic=6'
-RP2=b'p3.pic=2'
+RP1=b'p3.pic=6' #image for raspberry connection in the record page (raspberry pi icon)
+RP2=b'p3.pic=2' #image standard for indicator (black square)
 
-P4 = b'p4.pic=7'
-P42= b'p4.pic=8'
+P4 = b'p4.pic=7' #image for distance < 100 cm  in the record page (Warning sign)
+P42= b'p4.pic=8' #image standard for indicator (black square)
 
-Mic=b'p12.pic=56'
-Mic2=b'p12.pic=2'
+Mic=b'p12.pic=32' #image for microphone in the record page (mic icon)
+Mic2=b'p12.pic=2' #image standard for indicator (black square)
+
+pdelete=b'va1.val=0'  #Start gif for delete files in the delete page (working gif)
+pfinish=b'va1.val=1' #End gif for delete files in the delete page 
+
+pconvert =b'va1.val=0'
+pendconvert =b'va1.val=1'
+
+pexport =b'va3.val=0'
+pendexport =b'va3.val=1'
 
 p80= b'p1.pic=2'
-p81= b'p8.pic=51'
-p82= b'p8.pic=52'
-p83= b'p8.pic=53'
-p84= b'p8.pic=54'
-p85= b'p8.pic=50'
+p81= b'p8.pic=27'
+p82= b'p8.pic=28'
+p83= b'p8.pic=29'
+p84= b'p8.pic=30'
+p85= b'p8.pic=26'
 
 p90= b'p1.pic=2'
-p91= b'p9.pic=51'
-p92= b'p9.pic=52'
-p93= b'p9.pic=53'
-p94= b'p9.pic=54'
-p95= b'p9.pic=50'
+p91= b'p9.pic=27'
+p92= b'p9.pic=28'
+p93= b'p9.pic=29'
+p94= b'p9.pic=30'
+p95= b'p9.pic=26'
 
 p110= b'p11.pic=2'
-p111= b'p11.pic=51'
-p112= b'p11.pic=52'
-p113= b'p11.pic=53'
-p114= b'p11.pic=54'
-p115= b'p11.pic=50'
+p111= b'p11.pic=27'
+p112= b'p11.pic=28'
+p113= b'p11.pic=29'
+p114= b'p11.pic=30'
+p115= b'p11.pic=26'
 
-p116= b'p9.pic=55'
+p116= b'p9.pic=31'
 
 dist0=b'"000"'
 
@@ -376,7 +385,7 @@ if __name__ == '__main__':
             if Format==b'page1':
                 pagecounter=b''
 
-        while pagecounter==b'page4': #page 4 /  setup
+        while pagecounter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
             capture=ser3.readline()
 
@@ -401,26 +410,13 @@ if __name__ == '__main__':
                 pagecounter=b''
 
             if capture==b'convert': #convert button
-                print ("Begin convert")
-                export=Process(target = ExportVideo, args=())
-                export.start()
-                alive=export.is_alive()
-                while alive==True:
-                    ser3.write(p81+eof)
-                    time.sleep(0.1)
-                    ser3.write(p82+eof)
-                    time.sleep(0.1)
-                    ser3.write(p83+eof)
-                    time.sleep(0.1)
-                    ser3.write(p84+eof)
-                    time.sleep(0.1)
-                    alive=export.is_alive()
-                    #print(alive)
-                if alive==False:
-                    ser3.write(p85+eof)
-                    export.terminate()
-                    export.join()
-                    print ("End convert")
+                print ("Begin convert files")
+                ser3.write(pconvert+eof)
+                ExportVideo ()
+                ser3.write(pendconvert+eof)
+                ser3.write(p85+eof)
+                print ("End convert")
+                    
 
             if capture==b'export': #export button
                 #print ("inicio")
@@ -468,28 +464,15 @@ if __name__ == '__main__':
 
             if delete==b'delete': #Delete button
                 print ("Begind delete files")
-                effacer=Process(target = DeleteFiles, args=())
-                effacer.start()
-                alive=effacer.is_alive()
-                while alive==True:
-                    ser3.write(p111+eof)
-                    time.sleep(0.1)
-                    ser3.write(p112+eof)
-                    time.sleep(0.1)
-                    ser3.write(p113+eof)
-                    time.sleep(0.1)
-                    ser3.write(p114+eof)
-                    time.sleep(0.1)
-                    alive=effacer.is_alive()
-                    #print(alive)
-                if alive==False:
-                    ser3.write(p115+eof)
-                    effacer.terminate()
-                    effacer.join()
-                    print ("End delete files")
-                    pagecounter=b''
-                    delete=b''
-                    ser3.write(page1+eof)
+                ser3.write(pdelete+eof)
+                DeleteFiles ()
+                ser3.write(pfinish+eof)
+                pagecounter=b''
+                delete=b''
+                print ("End delete files")
+                ser3.write(page1+eof)
+                    
+
 
 
 
