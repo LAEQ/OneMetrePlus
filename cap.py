@@ -143,8 +143,7 @@ def getGpsData():
                 print('Unable to parse data{}'.format(e))
 
 def getCamera (timestamp,r1,r2):
-    with picamera.PiCamera () as camera:
-        print("Start video")
+    with picamera.PiCamera () as camera:        
         camera.resolution = (r1,r2)
         camera.framerate = 24
         #camera.start_preview(fullscreen=False,window=(100,200,300,300))
@@ -152,7 +151,6 @@ def getCamera (timestamp,r1,r2):
         camera.annotate_background = picamera.Color('black')
         camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         camera.annotate_text_size=12
-        ser3.write(P1+eof) #signal of recording
         camera.start_recording('/home/pi/Desktop/Capteur/files/video/ID1_C1_{}.h264'.format(timestamp))
         #camera.video_stabilization
         start=dt.datetime.now()
@@ -160,8 +158,7 @@ def getCamera (timestamp,r1,r2):
             camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             camera.wait_recording(0.2)
         camera.stop_recording()
-        ser3.write(P2+eof) #signal of stop recording
-        print("End video")
+        #ser3.write(P2+eof) #signal of stop recording        
 
 def getMic (timestamp):
     time.sleep(0.6)
@@ -257,29 +254,30 @@ if __name__ == '__main__':
 
     while True: #page 1 /  menu
         pagecounter=ser3.readline()
-        #Hour and date
-        HourScreenMenu ()
-        DateScreenMenu ()
+         
+        HourScreenMenu () #Hour
+        DateScreenMenu () #Date
 
         while pagecounter==b'page2': #page 2 /  record
             #Clean the screen
             cleanScreen ()
-            ser3.write(RP1+eof)
+            ser3.write(RP1+eof) #Rpi connected
 
             #Reading input of screen touch nextion (waiting: start)
-            while start==b'' or start==b'stop':
+            while start==b'':
                 start=ser3.readline()
                 #print ("Waiting", start)
                 HourRecordMenu ()
 
                 #start process of: camera, gps and distance sensor.
-                if start==b'start':
-                    print("Begin recording")
+                if start==b'start':                    
                     previousGpsTime = 0
                     previousDistTime = 0
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
                     ser.open()
                     ser2.open()
+                    print("Begin recording video")
+                    ser3.write(P1+eof) #signal of recording                    
                     cam=Process(target = getCamera, args=(timestamp,r1,r2,))
                     cam.start()
                     mic=Process(target = getMic, args=(timestamp,))
@@ -318,6 +316,7 @@ if __name__ == '__main__':
 
                         if stop==b'stop':
                             Record=False
+                            print("End recording video")
                             cam.terminate()
                             cam.join()
                             subprocess.call(['pkill arecord'],shell=True)
