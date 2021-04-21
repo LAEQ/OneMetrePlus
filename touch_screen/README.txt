@@ -9,3 +9,5 @@
 7. on the screen you will see the software update
 8. turn off the sensor and remove the sd card
 9. finally the screen will be ready for use
+
+P.S. For this version of the screen, there is a hot spot in the upper right corner of the screen to check the menus.
