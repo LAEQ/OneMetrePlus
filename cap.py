@@ -295,14 +295,14 @@ if __name__ == '__main__':
 
                         stop=ser3.readline()
                         HourRecordMenu ()
-                        hour=dt.datetime.now().strftime('%H:%M:%S.%f')[:-3]
+                        hour=dt.datetime.now().strftime('%H:%M:%S.%f')
                         currentTime =int(round(time.perf_counter()*1000))
 
                         distance=getTFminiData(unit,distinit)
                         distanceScreen(distance)
                         if distance>0 and distance <= maximumDistance:
                             print(hour,distance)
-                            file1.write(str(hour) + ',' + str(distance) +  '\n')
+                            file1.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None
 
