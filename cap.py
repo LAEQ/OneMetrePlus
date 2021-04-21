@@ -72,42 +72,25 @@ Mic2=b'p12.pic=2' #image standard for indicator (black square)
 pdelete=b'va1.val=0'  #Start gif for delete files in the delete page (working gif)
 pfinish=b'va1.val=1' #End gif for delete files in the delete page 
 
-pconvert =b'va1.val=0'
-pendconvert =b'va1.val=1'
+pconvert =b'va1.val=0'  #Start gif for convert files in the format page (working gif)
+pendconvert =b'va1.val=1' #End gif for convert files in the format page 
 
-pexport =b'va3.val=0'
-pendexport =b'va3.val=1'
+pexport =b'va3.val=0' #Start gif for export files in the format page (working gif)
+pendexport =b'va3.val=1' #End gif for export files in the format page 
 
-p80= b'p1.pic=2'
-p81= b'p8.pic=27'
-p82= b'p8.pic=28'
-p83= b'p8.pic=29'
-p84= b'p8.pic=30'
-p85= b'p8.pic=26'
+Finishconvert= b'p8.pic=26' #image for indicate that convert is finish in the format page (green circle)
+Finishexport= b'p9.pic=26' #image for indicate that export is finish in the format page (green circle)
+Usbplug= b'p9.pic=31' #image for indicate that usb is connected and have the file LAEQ.txt in the format page (green ok)
 
-p90= b'p1.pic=2'
-p91= b'p9.pic=27'
-p92= b'p9.pic=28'
-p93= b'p9.pic=29'
-p94= b'p9.pic=30'
-p95= b'p9.pic=26'
+dist0=b'"000"' #text object for reinitialize the distance in the record page
 
-p110= b'p11.pic=2'
-p111= b'p11.pic=27'
-p112= b'p11.pic=28'
-p113= b'p11.pic=29'
-p114= b'p11.pic=30'
-p115= b'p11.pic=26'
+page0= b'page 0' #page number for the animation LAEQ 
+page1= b'page 1' #page number for the main menu
+page2= b'page 2' #page number for the record page
 
-p116= b'p9.pic=31'
+picerror= b'p18.pic=35' #error image during recording in the record page (red rectangle with word error)
 
-dist0=b'"000"'
-
-page0= b'page 0'
-page1= b'page 1'
-page2= b'page 2'
-
-pagecounter=b''
+pagecounter=b'' #page counter between raspberry pi and nextion screen 
 
 subdirectory = "/media/pi/"
 
@@ -393,7 +376,7 @@ if __name__ == '__main__':
                 for name in files:
                     if fnmatch.fnmatch(name, '*.txt'):
                         if name == 'LAEQ.txt':
-                            ser3.write(p116+eof)
+                            ser3.write(Usbplug+eof)
 
             if capture==b'capture': #Reading distance of reference
                 ser.open()
@@ -414,7 +397,7 @@ if __name__ == '__main__':
                 ser3.write(pconvert+eof)
                 ExportVideo ()
                 ser3.write(pendconvert+eof)
-                ser3.write(p85+eof)
+                ser3.write(Finishconvert+eof)
                 print ("End convert files")
                     
             if capture==b'export': #export button
@@ -422,7 +405,7 @@ if __name__ == '__main__':
                 ser3.write(pexport+eof)
                 ExportFiles ()
                 ser3.write(pendexport+eof)
-                ser3.write(p95+eof)
+                ser3.write(Finishexport+eof)
                 print ("End export files")
 
             if capture==b'800': #Resolution button 800x600
