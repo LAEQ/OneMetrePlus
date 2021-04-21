@@ -237,6 +237,14 @@ def HourRecordMenu ():
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t14+hourstrb+eof)
 
+def PresenceUsb ():
+    #Icon ok for usb connected
+    for root, dirs, files in os.walk(subdirectory):
+        for name in files:
+            if fnmatch.fnmatch(name, '*.txt'):
+                if name == 'LAEQ.txt':
+                    ser3.write(Usbplug+eof)
+
 #####################
 #Generer les commandes
 #####################
@@ -371,12 +379,8 @@ if __name__ == '__main__':
         while pagecounter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
             capture=ser3.readline()
-
-            for root, dirs, files in os.walk(subdirectory):#Icon ok for usb connected
-                for name in files:
-                    if fnmatch.fnmatch(name, '*.txt'):
-                        if name == 'LAEQ.txt':
-                            ser3.write(Usbplug+eof)
+            #identifies the presence of a connected usb
+            PresenceUsb ()
 
             if capture==b'capture': #Reading distance of reference
                 ser.open()
