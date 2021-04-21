@@ -121,7 +121,7 @@ def getTFminiData(unit,distinit):
     ser.reset_input_buffer()
     if recv[0] == 0x59 and recv[1] == 0x59:
         distance = ((recv[2] + recv[3] * 256)*unit)-(3*unit)-(distinit*unit)
-        return [distance]
+        return distance
 
 def getGpsData():
     ser3.write(gp+eof)
@@ -181,7 +181,7 @@ def cleanScreen ():
     ser3.write(Mic2+eof)
 
 def distanceScreen(distance):
-    x = distance[0]
+    x = distance
     #print(x)
     y = b'"%d"'%x
     if x == 0:
@@ -300,9 +300,9 @@ if __name__ == '__main__':
 
                         distance=getTFminiData(unit,distinit)
                         distanceScreen(distance)
-                        if distance[0]>0 and distance[0] <= maximumDistance:
-                            print(hour,distance[0])
-                            file1.write(str(hour) + ',' + str(distance[0]) +  '\n')
+                        if distance>0 and distance <= maximumDistance:
+                            print(hour,distance)
+                            file1.write(str(hour) + ',' + str(distance) +  '\n')
 
                         gps = None
 
