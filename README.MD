@@ -56,7 +56,7 @@ systemctl disable hciuart
 ```
 
 #### List of services to stop & disable
-- cups
+- cups & cups-browsed
 - bluetooth
 - cron 
 - 
