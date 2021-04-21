@@ -3,12 +3,11 @@
 #### Configuration service  
 Create a file ~/.config/systemd/user/capture.service
 
-Note: modify the user accordingly !
+Note: modify accordingly with your setup !
 
-```
+```bash
 [Unit]
 Description=Capture service
-After=network.target
 
 [Service]
 Type=simple
@@ -21,17 +20,14 @@ Restart=always
 RestartSec=1
 
 [Install]
-WantedBy=multi-user.target
-
-[Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 Alias=capture.service
 ```
 
 Configuration
 ```bash
 # Create log files (mandatory)
-touch /home/david/info.log /home/david/error.log
+touch /home/pi/info.log /home/pi/error.log
 systemctl --user daemon-reload
 systemctl --user enable capture.service
 systemctl --user start capture.service
@@ -40,8 +36,8 @@ systemctl --user start capture.service
 #### Manage services 
 
 ```bash
-systemctl start|stop capture
-systemctl enable|disable capture
+systemctl start|stop service
+systemctl enable|disable service
 systemctl list-units --type=service
 
 #Example: Stop bluetooth
@@ -59,7 +55,6 @@ systemctl disable hciuart
 - cups & cups-browsed
 - bluetooth
 - cron 
-- 
 
 ### Wifi card
 ```bash
