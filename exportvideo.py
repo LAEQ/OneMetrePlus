@@ -51,7 +51,6 @@ Videos = InPutFolder.walkfiles("*.h264")
 Commandes = []
 BaseCommande = 'ffmpeg -r 24 -i "++Inputvideo++" -i "++Inputsound++" -c:v copy -c:a aac -r 24 "++Output++"'
 for Video in Videos :
-    print ("Begin convert")
     Inputvideo = Video
     Inputsound = InputSoundFolder.joinpath(Video.name)
     Output = OutPutFinalFolder.joinpath(Video.name)
@@ -61,7 +60,7 @@ for Video in Videos :
     thisCommande = BaseCommande.replace("++Inputvideo++",Inputvideo.replace("\\","/")).replace("++Inputsound++",Inputsound.replace(".h264",".wav")).replace("++Output++",Output.replace(".h264",".mp4"))
     print("Executing this command : "+thisCommande)
     os.system(thisCommande)
-    print ("End convert")
+
 
       
 

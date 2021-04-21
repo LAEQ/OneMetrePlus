@@ -415,30 +415,15 @@ if __name__ == '__main__':
                 ExportVideo ()
                 ser3.write(pendconvert+eof)
                 ser3.write(p85+eof)
-                print ("End convert")
+                print ("End convert files")
                     
-
             if capture==b'export': #export button
-                #print ("inicio")
-                exportf=Process(target = ExportFiles, args=())
-                exportf.start()
-                alivef=exportf.is_alive()
-                while alivef==True:
-                    ser3.write(p91+eof)
-                    time.sleep(0.1)
-                    ser3.write(p92+eof)
-                    time.sleep(0.1)
-                    ser3.write(p93+eof)
-                    time.sleep(0.1)
-                    ser3.write(p94+eof)
-                    time.sleep(0.1)
-                    alivef=exportf.is_alive()
-                    #print(alive)
-                if alivef==False:
-                    ser3.write(p95+eof)
-                    exportf.terminate()
-                    exportf.join()
-                    #print ("fin")
+                print ("Begin export files")
+                ser3.write(pexport+eof)
+                ExportFiles ()
+                ser3.write(pendexport+eof)
+                ser3.write(p95+eof)
+                print ("End export files")
 
             if capture==b'800': #Resolution button 800x600
                 r1 = 800
