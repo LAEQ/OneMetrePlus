@@ -4,7 +4,7 @@
 2. only this file must be on the card
 3. verify that the screen is turned off
 4. remove the white plastic support of the screen
-5. insert the card in the slot of the display (bak of the screen)
+5. insert the card in the slot of the display (back of the screen)
 6. switch on the distance sensor 
 7. on the screen you will see the software update
 8. turn off the sensor and remove the sd card
