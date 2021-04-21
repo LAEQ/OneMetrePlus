@@ -187,10 +187,10 @@ def distanceScreen(distance):
     if x == 0:
         ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
-    elif x>0 and x <= 30:
+    elif x>0 and x <= 100:
         ser3.write(P4+eof)
         ser3.write(t2+y+eof)
-    elif x > 30 and x<= 260:
+    elif x > 100 and x<= 260:
         ser3.write(P42+eof)
         ser3.write(t2+y+eof)
     elif x == None:
