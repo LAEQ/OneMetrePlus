@@ -73,10 +73,12 @@ pdelete=b'va1.val=0'  #Start gif for delete files in the delete page (working gi
 pfinish=b'va1.val=1' #End gif for delete files in the delete page 
 
 pconvert =b'va1.val=0'  #Start gif for convert files in the format page (working gif)
-pendconvert =b'va1.val=1' #End gif for convert files in the format page 
+pendconvert =b'va1.val=1' #End gif for convert files in the format page
+perrorconvert =  b'p8.pic=36' #image for indicate error of convert in the format page (red cross)
 
 pexport =b'va3.val=0' #Start gif for export files in the format page (working gif)
 pendexport =b'va3.val=1' #End gif for export files in the format page 
+perrorexport =  b'p9.pic=36' #image for indicate error of export in the format page (red cross)
 
 Finishconvert= b'p8.pic=26' #image for indicate that convert is finish in the format page (green circle)
 Finishexport= b'p9.pic=26' #image for indicate that export is finish in the format page (green circle)
@@ -252,8 +254,7 @@ if __name__ == '__main__':
     ser3.write(page1+eof) # acces a la page 1 / menu
 
     while True: #page 1 /  menu
-        pagecounter=ser3.readline()
-         
+        pagecounter=ser3.readline()         
         HourScreenMenu () #Hour
         DateScreenMenu () #Date
 
@@ -264,7 +265,7 @@ if __name__ == '__main__':
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
-                start=ser3.readline() #reading serial port from the screen touch                
+                start=ser3.readline() #reading serial port from the screen touch             
                 HourRecordMenu () #Hour
                 
                 if start==b'start':    #start process of: camera, gps and distance sensor.                 
@@ -302,10 +303,11 @@ if __name__ == '__main__':
                             file1.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None
-                        ser3.write(gp+eof)
+                        
 
                         if currentTime - previousGpsTime > gpsperiod:
                             gps = getGpsData()
+                            ser3.write(gp+eof)
                             print(gps)
                             previousGpsTime = currentTime
 
@@ -403,7 +405,7 @@ if __name__ == '__main__':
                     ser3.write(pendconvert+eof)
                     ser3.write(Finishconvert+eof)
                 except:
-                    pass
+                    ser3.write(perrorconvert+eof)
                 finally:
                     pass                
                 print ("End convert files")
@@ -416,7 +418,7 @@ if __name__ == '__main__':
                     ser3.write(pendexport+eof)
                     ser3.write(Finishexport+eof)
                 except:
-                    pass
+                    ser3.write(perrorexport+eof)
                 finally:
                     pass
                 print ("End export files")
