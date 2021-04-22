@@ -398,17 +398,27 @@ if __name__ == '__main__':
             if capture==b'convert': #convert button
                 print ("Begin convert files")
                 ser3.write(pconvert+eof)
-                ExportVideo ()
-                ser3.write(pendconvert+eof)
-                ser3.write(Finishconvert+eof)
+                try:
+                    ExportVideo ()
+                    ser3.write(pendconvert+eof)
+                    ser3.write(Finishconvert+eof)
+                except:
+                    pass
+                finally:
+                    pass                
                 print ("End convert files")
                     
             if capture==b'export': #export button
                 print ("Begin export files")
                 ser3.write(pexport+eof)
-                ExportFiles ()
-                ser3.write(pendexport+eof)
-                ser3.write(Finishexport+eof)
+                try:
+                    ExportFiles ()
+                    ser3.write(pendexport+eof)
+                    ser3.write(Finishexport+eof)
+                except:
+                    pass
+                finally:
+                    pass
                 print ("End export files")
 
             if capture==b'800': #Resolution button 800x600
