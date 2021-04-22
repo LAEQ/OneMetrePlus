@@ -245,7 +245,6 @@ def ExportVideo ():
         print("Executing this command : "+thisCommande)
         os.system(thisCommande)
 
-
 def ExportFiles ():
     InPutFolder = Path("/home/pi/Desktop/Capteur/files")
     subdirectory = "/media/pi/"
@@ -333,6 +332,11 @@ def PresenceUsb ():
                 if name == 'LAEQ.txt':
                     ser3.write(Usbplug+eof)
 
+def Function_test_csv(timestamp, distance):
+    with open('test2.txt', 'a') as distance_test:
+        distance_test.write(timestamp + ',' + str(distance) +  '\n')
+    
+    
 #####################
 #Generer les commandes
 #####################
@@ -373,14 +377,13 @@ if __name__ == '__main__':
                     mic=Process(target = getMic, args=(timestamp,))
                     mic.start()
 
-                    #Prepare de file csv for writing
-                    file1 = open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp),'a+')
-                    file1.write("time,distance\n")
-                    file2 = open('/home/pi/Desktop/Capteur/files/gps/ID1_C1_{}.csv'.format(timestamp),'a+')
-                    file2.write("time,latitude,longitude\n")
+                    #Prepare de file csv for writing                    
+                    with open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp), 'a') as distance_csv:
+                        distance_csv.write("time,distance\n")
+                    with open('/home/pi/Desktop/Capteur/files/gps/ID1_C1_{}.csv'.format(timestamp), 'a') as GPS_csv:
+                        GPS_csv.write("time,latitude,longitude\n")
 
                     while Record==True:
-
                         stop=ser3.readline()
                         HourRecordMenu ()
                         hour=dt.datetime.now().strftime('%H:%M:%S.%f')
@@ -390,10 +393,12 @@ if __name__ == '__main__':
                         distanceScreen(distance)
                         if distance>0 and distance <= maximumDistance:
                             print(hour,distance)
-                            file1.write(hour + ',' + str(distance) +  '\n')
+                            Function_test_csv(hour,distance)
+                            with open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp), 'a') as distance_test:
+                                distance_test.write(hour + ',' + str(distance) +  '\n')
+                            #file1.write(hour + ',' + str(distance) +  '\n')
 
-                        gps = None
-                        
+                        gps = None                        
 
                         if currentTime - previousGpsTime > gpsperiod:
                             gps = getGpsData()
@@ -404,7 +409,8 @@ if __name__ == '__main__':
                         if gps!= None:
                             print(hour,gps)
                             gpsScreen(gps)
-                            file2.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
+                            with open('/home/pi/Desktop/Capteur/files/gps/ID1_C1_{}.csv'.format(timestamp), 'a') as GPS_csv:
+                                GPS_csv.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
 
                         if stop==b'stop':
                             Record=False
@@ -416,8 +422,6 @@ if __name__ == '__main__':
                             mic.terminate()
                             mic.join()
                             start=0
-                            file1.close()
-                            file2.close()
                             ser.close()
                             ser2.close()
                             pagecounter=b'page2'
@@ -433,8 +437,6 @@ if __name__ == '__main__':
                             mic.terminate()
                             mic.join()
                             start=0
-                            file1.close()
-                            file2.close()
                             ser.close()
                             ser2.close()
                             pagecounter=b''
