@@ -212,10 +212,23 @@ def ExportVideo ():
     subprocess.run(['python3', '/home/pi/exportvideo.py'])
 
 def ExportFiles ():
-    subprocess.run(['python3', '/home/pi/exportdata.py'])
+    InPutFolder = Path("/home/pi/Desktop/Capteur/files")
+    subdirectory = "/media/pi/"
+
+    for root, dirs, files in os.walk(subdirectory):
+        for name in files:
+            if fnmatch.fnmatch(name, '*.txt'):
+                if name == 'LAEQ.txt':
+                    Subfolder = root
+                    OutPutFolder = Path(Subfolder)
+                    print(InPutFolder,OutPutFolder)
+                    os.system('cp -r '+ InPutFolder +' '+ OutPutFolder)
+                    print (os.path.join(root, name))
+                    os.system('umount '+OutPutFolder)
+            else:
+                print ('Error exportation, no txt file')
 
 def DeleteFiles ():
-    #subprocess.run(['python3', '/home/pi/delete.py'])
     Folder1 = Path("/home/pi/Desktop/Capteur/files/distance")
     #Folder2 = Path("/home/pi/Desktop/Capteur/files/videostructured")
     Folder3 = Path("/home/pi/Desktop/Capteur/files/gps")
