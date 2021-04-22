@@ -1,4 +1,6 @@
-# Capture Raspberry Pi 
+# Capture Raspberry Pi project
+
+description to come
 
 #### Test unitaires
 ```bash
@@ -8,7 +10,9 @@ python3 -m unittest
 #### Configuration service  
 Create a file ~/.config/systemd/user/capture.service
 
-```
+Note: modify accordingly with your setup !
+
+```bash
 [Unit]
 Description=Capture service
 
@@ -39,8 +43,8 @@ systemctl --user start capture.service
 #### Manage services 
 
 ```bash
-systemctl start|stop capture
-systemctl enable|disable capture
+systemctl start|stop service
+systemctl enable|disable service
 systemctl list-units --type=service
 
 #Example: Stop bluetooth
@@ -53,6 +57,11 @@ systemctl disable wpa_supplicant
 systemctl disable bluetooth
 systemctl disable hciuart
 ```
+
+#### List of services to stop & disable
+- cups & cups-browsed
+- bluetooth
+- cron 
 
 ### Wifi card
 ```bash
