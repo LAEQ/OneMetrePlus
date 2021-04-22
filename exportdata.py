@@ -15,14 +15,10 @@ import fnmatch
 InPutFolder = Path("/home/pi/Desktop/Capteur/files")
 subdirectory = "/media/pi/"
 
-#if we need find it first
-#print (InPutFolder)
-
 for root, dirs, files in os.walk(subdirectory):
     for name in files:
         if fnmatch.fnmatch(name, '*.txt'):
             if name == 'LAEQ.txt':
-                print("Begin exportation") 
                 Subfolder = root
                 OutPutFolder = Path(Subfolder)
                 print(InPutFolder,OutPutFolder)
@@ -32,9 +28,8 @@ for root, dirs, files in os.walk(subdirectory):
                 os.system('umount '+OutPutFolder)
                 #os.system('eject '+OutPutFolder)
                 #print (root)
-                print("End exportation") 
-            else:
-                print ('Error exportation, no usb')
+        else:
+            print ('Error exportation, no txt file')
 
 
 

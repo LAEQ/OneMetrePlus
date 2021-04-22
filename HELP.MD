@@ -16,3 +16,7 @@ git pull origin <branch_name>
 git log
 git fetch 
 ```
+
+# Config
+Username pi
+password Inrs2020
