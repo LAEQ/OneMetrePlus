@@ -124,16 +124,16 @@ def getTFminiData(unit,distinit):
         return distance
 
 def getGpsData():
-    ser3.write(gp+eof)
+    #ser3.write(gp+eof)
     data = ser2.readline().decode('ascii', errors='replace')
     if 'GGA' in data:
             try:
                 global_position_sys = pynmea2.parse(data)
 
-                if global_position_sys.latitude == 0:
-                    ser3.write(gp2+eof)
-                else:
-                    ser3.write(gp+eof)
+                # if global_position_sys.latitude == 0:
+                #     ser3.write(gp2+eof)
+                # else:
+                #     ser3.write(gp+eof)
 
                 return [global_position_sys.latitude,global_position_sys.longitude]
                 #move on to the next message if there are problems with the first
@@ -162,12 +162,11 @@ def getCamera (timestamp,r1,r2):
 
 def getMic (timestamp):
     time.sleep(0.6)
-    ser3.write(Mic+eof) #signal of recording
     outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+'/home/pi/Desktop/Capteur/files/sound/ID1_C1_'+timestamp+'.wav'
     print (outputMic)
     #subprocess.call(args=[outputMic],shell=True)
     os.system(outputMic)
-    ser3.write(Mic2+eof)
+    #ser3.write(Mic2+eof)
 
 def cleanScreen ():
     ser3.write(P2+eof)
@@ -265,21 +264,21 @@ if __name__ == '__main__':
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
-                start=ser3.readline()
-                #print ("Waiting", start)
-                HourRecordMenu ()
-
-                #start process of: camera, gps and distance sensor.
-                if start==b'start':                    
+                start=ser3.readline() #reading serial port from the screen touch                
+                HourRecordMenu () #Hour
+                
+                if start==b'start':    #start process of: camera, gps and distance sensor.                 
                     previousGpsTime = 0
                     previousDistTime = 0
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
                     ser.open()
                     ser2.open()
                     print("Begin recording video")
-                    ser3.write(P1+eof) #signal of recording                    
+                    ser3.write(P1+eof) #signal of recording video                  
                     cam=Process(target = getCamera, args=(timestamp,r1,r2,))
                     cam.start()
+                    print("Begin recording audio")
+                    ser3.write(Mic+eof) #signal of recording audio 
                     mic=Process(target = getMic, args=(timestamp,))
                     mic.start()
 
@@ -303,6 +302,7 @@ if __name__ == '__main__':
                             file1.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None
+                        ser3.write(gp+eof)
 
                         if currentTime - previousGpsTime > gpsperiod:
                             gps = getGpsData()
@@ -311,7 +311,7 @@ if __name__ == '__main__':
 
                         if gps!= None:
                             print(hour,gps)
-                            #gpsScreen(gps)
+                            gpsScreen(gps)
                             file2.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
 
                         if stop==b'stop':
@@ -436,8 +436,13 @@ if __name__ == '__main__':
             if delete==b'delete': #Delete button
                 print ("Begind delete files")
                 ser3.write(pdelete+eof)
-                DeleteFiles ()
-                ser3.write(pfinish+eof)
+                try: 
+                    DeleteFiles ()
+                    ser3.write(pfinish+eof)
+                except:
+                    pass
+                finally:
+                    pass 
                 pagecounter=b''
                 delete=b''
                 print ("End delete files")
