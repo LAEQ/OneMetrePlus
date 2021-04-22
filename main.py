@@ -48,57 +48,49 @@ r2 = 300 #camera resolution
 #Serial Instructions for screen
 #####################
 eof = b'\xff\xff\xff'
-t2 = b't2.txt='
+t2 = b't2.txt=' #text object for distance in the record page
 t8 = b't8.txt='
-t14 = b't14.txt='
-t15 = b't15.txt='
-t16 = b't0.txt='
+t14 = b't14.txt=' #text object for hour in the record page
+t15 = b't15.txt=' #text object for hour in the main menu
+t16 = b't0.txt=' #text object for date in the main menu
 
-P1 = b'p1.pic=0'
-P2=b'p1.pic=2'
+P1 = b'p1.pic=0' #image for recording in the record page (red circle)
+P2=b'p1.pic=2' #image standard for indicator of record (black square)
 
-gp= b'p2.pic=1'
-gp2=b'p2.pic=2'
+gp= b'p2.pic=1' #image for GPS in the record page (target)
+gp2=b'p2.pic=2' #image standard for indicator (black square)
 
-RP1=b'p3.pic=6'
-RP2=b'p3.pic=2'
+RP1=b'p3.pic=6' #image for raspberry connection in the record page (raspberry pi icon)
+RP2=b'p3.pic=2' #image standard for indicator (black square)
 
-P4 = b'p4.pic=7'
-P42= b'p4.pic=8'
+P4 = b'p4.pic=7' #image for distance < 100 cm  in the record page (Warning sign)
+P42= b'p4.pic=8' #image standard for indicator (black square)
 
-Mic=b'p12.pic=56'
-Mic2=b'p12.pic=2'
+Mic=b'p12.pic=32' #image for microphone in the record page (mic icon)
+Mic2=b'p12.pic=2' #image standard for indicator (black square)
 
-p80= b'p1.pic=2'
-p81= b'p8.pic=51'
-p82= b'p8.pic=52'
-p83= b'p8.pic=53'
-p84= b'p8.pic=54'
-p85= b'p8.pic=50'
+pdelete=b'va1.val=0'  #Start gif for delete files in the delete page (working gif)
+pfinish=b'va1.val=1' #End gif for delete files in the delete page 
 
-p90= b'p1.pic=2'
-p91= b'p9.pic=51'
-p92= b'p9.pic=52'
-p93= b'p9.pic=53'
-p94= b'p9.pic=54'
-p95= b'p9.pic=50'
+pconvert =b'va1.val=0'  #Start gif for convert files in the format page (working gif)
+pendconvert =b'va1.val=1' #End gif for convert files in the format page 
 
-p110= b'p11.pic=2'
-p111= b'p11.pic=51'
-p112= b'p11.pic=52'
-p113= b'p11.pic=53'
-p114= b'p11.pic=54'
-p115= b'p11.pic=50'
+pexport =b'va3.val=0' #Start gif for export files in the format page (working gif)
+pendexport =b'va3.val=1' #End gif for export files in the format page 
 
-p116= b'p9.pic=55'
+Finishconvert= b'p8.pic=26' #image for indicate that convert is finish in the format page (green circle)
+Finishexport= b'p9.pic=26' #image for indicate that export is finish in the format page (green circle)
+Usbplug= b'p9.pic=31' #image for indicate that usb is connected and have the file LAEQ.txt in the format page (green ok)
 
-dist0=b'"000"'
+dist0=b'"000"' #text object for reinitialize the distance in the record page
 
-page0= b'page 0'
-page1= b'page 1'
-page2= b'page 2'
+page0= b'page 0' #page number for the animation LAEQ 
+page1= b'page 1' #page number for the main menu
+page2= b'page 2' #page number for the record page
 
-pagecounter=b''
+picerror= b'p18.pic=35' #error image during recording in the record page (red rectangle with word error)
+
+pagecounter=b'' #page counter between raspberry pi and nextion screen 
 
 subdirectory = "/media/pi/"
 
@@ -129,19 +121,19 @@ def getTFminiData(unit,distinit):
     ser.reset_input_buffer()
     if recv[0] == 0x59 and recv[1] == 0x59:
         distance = ((recv[2] + recv[3] * 256)*unit)-(3*unit)-(distinit*unit)
-        return [distance]
+        return distance
 
 def getGpsData():
-    ser3.write(gp+eof)
+    #ser3.write(gp+eof)
     data = ser2.readline().decode('ascii', errors='replace')
     if 'GGA' in data:
             try:
                 global_position_sys = pynmea2.parse(data)
 
-                if global_position_sys.latitude == 0:
-                    ser3.write(gp2+eof)
-                else:
-                    ser3.write(gp+eof)
+                # if global_position_sys.latitude == 0:
+                #     ser3.write(gp2+eof)
+                # else:
+                #     ser3.write(gp+eof)
 
                 return [global_position_sys.latitude,global_position_sys.longitude]
                 #move on to the next message if there are problems with the first
@@ -151,8 +143,7 @@ def getGpsData():
                 print('Unable to parse data{}'.format(e))
 
 def getCamera (timestamp,r1,r2):
-    with picamera.PiCamera () as camera:
-        print("Start video")
+    with picamera.PiCamera () as camera:        
         camera.resolution = (r1,r2)
         camera.framerate = 24
         #camera.start_preview(fullscreen=False,window=(100,200,300,300))
@@ -160,7 +151,6 @@ def getCamera (timestamp,r1,r2):
         camera.annotate_background = picamera.Color('black')
         camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         camera.annotate_text_size=12
-        ser3.write(P1+eof) #signal of recording
         camera.start_recording('/home/pi/Desktop/Capteur/files/video/ID1_C1_{}.h264'.format(timestamp))
         #camera.video_stabilization
         start=dt.datetime.now()
@@ -168,17 +158,15 @@ def getCamera (timestamp,r1,r2):
             camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             camera.wait_recording(0.2)
         camera.stop_recording()
-        ser3.write(P2+eof) #signal of stop recording
-        print("End video")
+        #ser3.write(P2+eof) #signal of stop recording        
 
 def getMic (timestamp):
     time.sleep(0.6)
-    ser3.write(Mic+eof) #signal of recording
     outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+'/home/pi/Desktop/Capteur/files/sound/ID1_C1_'+timestamp+'.wav'
     print (outputMic)
     #subprocess.call(args=[outputMic],shell=True)
     os.system(outputMic)
-    ser3.write(Mic2+eof)
+    #ser3.write(Mic2+eof)
 
 def cleanScreen ():
     ser3.write(P2+eof)
@@ -189,16 +177,16 @@ def cleanScreen ():
     ser3.write(Mic2+eof)
 
 def distanceScreen(distance):
-    x = distance[0]
+    x = distance
     #print(x)
     y = b'"%d"'%x
     if x == 0:
         ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
-    elif x>0 and x <= 30:
+    elif x>0 and x <= 100:
         ser3.write(P4+eof)
         ser3.write(t2+y+eof)
-    elif x > 30 and x<= 260:
+    elif x > 100 and x<= 260:
         ser3.write(P42+eof)
         ser3.write(t2+y+eof)
     elif x == None:
@@ -245,6 +233,14 @@ def HourRecordMenu ():
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t14+hourstrb+eof)
 
+def PresenceUsb ():
+    #Icon ok for usb connected
+    for root, dirs, files in os.walk(subdirectory):
+        for name in files:
+            if fnmatch.fnmatch(name, '*.txt'):
+                if name == 'LAEQ.txt':
+                    ser3.write(Usbplug+eof)
+
 #####################
 #Generer les commandes
 #####################
@@ -257,31 +253,32 @@ if __name__ == '__main__':
 
     while True: #page 1 /  menu
         pagecounter=ser3.readline()
-        #Hour and date
-        HourScreenMenu ()
-        DateScreenMenu ()
+         
+        HourScreenMenu () #Hour
+        DateScreenMenu () #Date
 
         while pagecounter==b'page2': #page 2 /  record
             #Clean the screen
             cleanScreen ()
-            ser3.write(RP1+eof)
+            ser3.write(RP1+eof) #Rpi connected
 
             #Reading input of screen touch nextion (waiting: start)
-            while start==b'' or start==b'stop':
-                start=ser3.readline()
-                #print ("Waiting", start)
-                HourRecordMenu ()
-
-                #start process of: camera, gps and distance sensor.
-                if start==b'start':
-                    print("Begin recording")
+            while start==b'':
+                start=ser3.readline() #reading serial port from the screen touch                
+                HourRecordMenu () #Hour
+                
+                if start==b'start':    #start process of: camera, gps and distance sensor.                 
                     previousGpsTime = 0
                     previousDistTime = 0
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
                     ser.open()
                     ser2.open()
+                    print("Begin recording video")
+                    ser3.write(P1+eof) #signal of recording video                  
                     cam=Process(target = getCamera, args=(timestamp,r1,r2,))
                     cam.start()
+                    print("Begin recording audio")
+                    ser3.write(Mic+eof) #signal of recording audio 
                     mic=Process(target = getMic, args=(timestamp,))
                     mic.start()
 
@@ -295,16 +292,17 @@ if __name__ == '__main__':
 
                         stop=ser3.readline()
                         HourRecordMenu ()
-                        hour=dt.datetime.now().strftime('%H:%M:%S.%f')[:-3]
+                        hour=dt.datetime.now().strftime('%H:%M:%S.%f')
                         currentTime =int(round(time.perf_counter()*1000))
 
                         distance=getTFminiData(unit,distinit)
                         distanceScreen(distance)
-                        if distance[0]>0 and distance[0] <= maximumDistance:
-                            print(hour,distance[0])
-                            file1.write(str(hour) + ',' + str(distance[0]) +  '\n')
+                        if distance>0 and distance <= maximumDistance:
+                            print(hour,distance)
+                            file1.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None
+                        ser3.write(gp+eof)
 
                         if currentTime - previousGpsTime > gpsperiod:
                             gps = getGpsData()
@@ -313,11 +311,12 @@ if __name__ == '__main__':
 
                         if gps!= None:
                             print(hour,gps)
-                            #gpsScreen(gps)
+                            gpsScreen(gps)
                             file2.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
 
                         if stop==b'stop':
                             Record=False
+                            print("End recording video")
                             cam.terminate()
                             cam.join()
                             subprocess.call(['pkill arecord'],shell=True)
@@ -376,15 +375,11 @@ if __name__ == '__main__':
             if Format==b'page1':
                 pagecounter=b''
 
-        while pagecounter==b'page4': #page 4 /  setup
+        while pagecounter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
             capture=ser3.readline()
-
-            for root, dirs, files in os.walk(subdirectory):#Icon ok for usb connected
-                for name in files:
-                    if fnmatch.fnmatch(name, '*.txt'):
-                        if name == 'LAEQ.txt':
-                            ser3.write(p116+eof)
+            #identifies the presence of a connected usb
+            PresenceUsb ()
 
             if capture==b'capture': #Reading distance of reference
                 ser.open()
@@ -401,48 +396,30 @@ if __name__ == '__main__':
                 pagecounter=b''
 
             if capture==b'convert': #convert button
-                print ("Begin convert")
-                export=Process(target = ExportVideo, args=())
-                export.start()
-                alive=export.is_alive()
-                while alive==True:
-                    ser3.write(p81+eof)
-                    time.sleep(0.1)
-                    ser3.write(p82+eof)
-                    time.sleep(0.1)
-                    ser3.write(p83+eof)
-                    time.sleep(0.1)
-                    ser3.write(p84+eof)
-                    time.sleep(0.1)
-                    alive=export.is_alive()
-                    #print(alive)
-                if alive==False:
-                    ser3.write(p85+eof)
-                    export.terminate()
-                    export.join()
-                    print ("End convert")
-
+                print ("Begin convert files")
+                ser3.write(pconvert+eof)
+                try:
+                    ExportVideo ()
+                    ser3.write(pendconvert+eof)
+                    ser3.write(Finishconvert+eof)
+                except:
+                    pass
+                finally:
+                    pass                
+                print ("End convert files")
+                    
             if capture==b'export': #export button
-                #print ("inicio")
-                exportf=Process(target = ExportFiles, args=())
-                exportf.start()
-                alivef=exportf.is_alive()
-                while alivef==True:
-                    ser3.write(p91+eof)
-                    time.sleep(0.1)
-                    ser3.write(p92+eof)
-                    time.sleep(0.1)
-                    ser3.write(p93+eof)
-                    time.sleep(0.1)
-                    ser3.write(p94+eof)
-                    time.sleep(0.1)
-                    alivef=exportf.is_alive()
-                    #print(alive)
-                if alivef==False:
-                    ser3.write(p95+eof)
-                    exportf.terminate()
-                    exportf.join()
-                    #print ("fin")
+                print ("Begin export files")
+                ser3.write(pexport+eof)
+                try:
+                    ExportFiles ()
+                    ser3.write(pendexport+eof)
+                    ser3.write(Finishexport+eof)
+                except:
+                    pass
+                finally:
+                    pass
+                print ("End export files")
 
             if capture==b'800': #Resolution button 800x600
                 r1 = 800
@@ -468,28 +445,20 @@ if __name__ == '__main__':
 
             if delete==b'delete': #Delete button
                 print ("Begind delete files")
-                effacer=Process(target = DeleteFiles, args=())
-                effacer.start()
-                alive=effacer.is_alive()
-                while alive==True:
-                    ser3.write(p111+eof)
-                    time.sleep(0.1)
-                    ser3.write(p112+eof)
-                    time.sleep(0.1)
-                    ser3.write(p113+eof)
-                    time.sleep(0.1)
-                    ser3.write(p114+eof)
-                    time.sleep(0.1)
-                    alive=effacer.is_alive()
-                    #print(alive)
-                if alive==False:
-                    ser3.write(p115+eof)
-                    effacer.terminate()
-                    effacer.join()
-                    print ("End delete files")
-                    pagecounter=b''
-                    delete=b''
-                    ser3.write(page1+eof)
+                ser3.write(pdelete+eof)
+                try: 
+                    DeleteFiles ()
+                    ser3.write(pfinish+eof)
+                except:
+                    pass
+                finally:
+                    pass 
+                pagecounter=b''
+                delete=b''
+                print ("End delete files")
+                ser3.write(page1+eof)
+                    
+
 
 
 
