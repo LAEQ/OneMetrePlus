@@ -209,7 +209,42 @@ def gpsScreen(gps):
         ser3.write(gp+eof)
 
 def ExportVideo ():
-    subprocess.run(['python3', '/home/pi/exportvideo.py'])
+    InPutFolder = Path("/home/pi/Desktop/Capteur/files/video")
+    InputSoundFolder = Path("/home/pi/Desktop/Capteur/files/sound")
+    OutPutFinalFolder = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
+
+
+    original_videos = InPutFolder.files("*.h264")
+    original_sound = InputSoundFolder.files("*.wav")
+    exported_sound_videos = OutPutFinalFolder.files("*.mp4")
+
+    original_names = [videopath.name.split('.')[0] for videopath in original_videos]
+    original_sound_names = [videopath.name.split('.')[0] for videopath in original_sound]
+    exported_sound_names = [videopath.name.split('.')[0] for videopath in exported_sound_videos]
+
+    Set1 = set(original_names)
+    Set3 = set(original_sound_names)
+    Set4 = set(exported_sound_names)
+
+    comp = Set1.intersection(Set4)
+
+    if len(comp)>0 :
+        for name in comp :
+            out_path = OutPutFinalFolder.joinpath(name+'.mp4')
+            os.remove(out_path)
+
+    Videos = InPutFolder.walkfiles("*.h264")
+    Commandes = []
+    #ffmpeg -i video/ID1_C1_2021_04_21_12_50_40.h264 -i sound/ID1_C1_2021_04_21_12_50_40.wav  -c:v copy -c:a aac -shortest videostructuredsound/ID1_C1_2021_04_21_12_50_40.mp4
+    BaseCommande = 'ffmpeg -i "++Inputvideo++" -i "++Inputsound++" -c:v copy -c:a aac -shortest "++Output++"'
+    for Video in Videos :
+        Inputvideo = Video
+        Inputsound = InputSoundFolder.joinpath(Video.name)
+        Output = OutPutFinalFolder.joinpath(Video.name)
+        thisCommande = BaseCommande.replace("++Inputvideo++",Inputvideo.replace("\\","/")).replace("++Inputsound++",Inputsound.replace(".h264",".wav")).replace("++Output++",Output.replace(".h264",".mp4"))
+        print("Executing this command : "+thisCommande)
+        os.system(thisCommande)
+
 
 def ExportFiles ():
     InPutFolder = Path("/home/pi/Desktop/Capteur/files")
