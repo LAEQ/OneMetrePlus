@@ -122,7 +122,7 @@ def getTFminiData(unit,distinit):
     recv = ser.read(9)
     ser.reset_input_buffer()
     if recv[0] == 0x59 and recv[1] == 0x59:
-        distance = ((recv[2] + recv[3] * 256)*unit)-(3*unit)-(distinit*unit)
+        distance = ((recv[2] + recv[3] * 256)*unit)-(distinit*unit)
         return distance
 
 def getGpsData():
@@ -215,7 +215,49 @@ def ExportFiles ():
     subprocess.run(['python3', '/home/pi/exportdata.py'])
 
 def DeleteFiles ():
-    subprocess.run(['python3', '/home/pi/delete.py'])
+    #subprocess.run(['python3', '/home/pi/delete.py'])
+    Folder1 = Path("/home/pi/Desktop/Capteur/files/distance")
+    #Folder2 = Path("/home/pi/Desktop/Capteur/files/videostructured")
+    Folder3 = Path("/home/pi/Desktop/Capteur/files/gps")
+    Folder4 = Path("/home/pi/Desktop/Capteur/files/video")
+    Folder5 = Path("/home/pi/Desktop/Capteur/files/sound")
+    Folder6 = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
+
+    distanceF = Folder1.files("*.csv")
+    #videostructuredF = Folder2.files("*.mp4")
+    gpsf = Folder3.files("*.csv")
+    videoF = Folder4.files("*.h264")
+    soundf = Folder5.files("*.wav")
+    videoFS = Folder6.files("*.mp4")
+
+    Set1 = set(distanceF)
+    #Set2 = set(videostructuredF)
+    Set3 = set(gpsf)
+    Set4 = set(videoF)
+    Set5 = set(soundf)
+    Set6 = set(videoFS)
+
+    #print (Set1)
+
+    if len(Set1)>0 :
+        for name in Set1 :
+            os.remove(name)
+
+    if len(Set3)>0 :
+        for name in Set3 :
+            os.remove(name)
+
+    if len(Set4)>0 :
+        for name in Set4 :
+            os.remove(name)
+
+    if len(Set5)>0 :
+        for name in Set5 :
+            os.remove(name)
+
+    if len(Set6)>0 :
+        for name in Set6 :
+            os.remove(name)
 
 def HourScreenMenu ():
     hour=dt.datetime.now().strftime('%H:%M:%S')
@@ -383,19 +425,24 @@ if __name__ == '__main__':
             #identifies the presence of a connected usb
             PresenceUsb ()
 
-            if capture==b'capture': #Reading distance of reference
-                ser.open()
-                distanceref =getTFminiDataRef(unit)
-                y = b'"%d"'%distanceref
-                if distanceref > 0 and distanceref <= 30:
-                    ser3.write(t8+y+eof)
-                    distinit=distanceref*unit
-                    print ('Initial distance:',distinit)
-                    ser.close()
-                ser.close()
-
             if capture==b'page1': #in/out menu setup
                 pagecounter=b''
+
+            if capture==b'capture': #Reading distance of reference
+                try:
+                    ser.open()
+                    distanceref =getTFminiDataRef(unit)
+                    y = b'"%d"'%distanceref
+                    if distanceref > 0 and distanceref <= 30:
+                        ser3.write(t8+y+eof)
+                        distinit=distanceref*unit
+                        print ('Initial distance:',distinit)
+                        ser.close()
+                    ser.close()
+                except:
+                    pass
+                finally:
+                    pass
 
             if capture==b'convert': #convert button
                 print ("Begin convert files")
@@ -451,13 +498,13 @@ if __name__ == '__main__':
                 try: 
                     DeleteFiles ()
                     ser3.write(pfinish+eof)
+                    print ("End delete files")
                 except:
                     pass
                 finally:
                     pass 
                 pagecounter=b''
-                delete=b''
-                print ("End delete files")
+                delete=b''                
                 ser3.write(page1+eof)
                     
 
