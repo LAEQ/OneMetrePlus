@@ -419,41 +419,32 @@ if __name__ == '__main__':
                             cam.join()
                             subprocess.call(['pkill arecord'],shell=True)
                             #os.system()
+                            print("End recording audio")
                             mic.terminate()
                             mic.join()
                             start=0
                             ser.close()
                             ser2.close()
                             pagecounter=b'page2'
-                            print ('Stop recording')
-
 
                         if stop==b'page1':
                             Record=False
+                            print("End recording video - page1")
                             cam.terminate()
                             cam.join()
                             subprocess.call(['pkill arecord'],shell=True)
                             #os.system('pkill arecord')
+                            print("End recording audio - page1")
                             mic.terminate()
                             mic.join()
                             start=0
                             ser.close()
                             ser2.close()
                             pagecounter=b''
-                            print ('Stop recording')
-
-                        #time.sleep(0.01)
-                        #print(start)
-
-                if start==b'page1': #In case of in/out of page2
-                    start=2
-                    #pagecounter=b''
 
             #return to 0
             cleanScreen()
             Record=True
-            if start==2:
-                pagecounter=b''
             start=b''
 
         while pagecounter==b'page3': #page 3 /  setup
