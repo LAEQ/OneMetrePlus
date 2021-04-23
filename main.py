@@ -336,29 +336,12 @@ def PresenceUsb ():
                 if name == 'LAEQ.txt':
                     ser3.write(Usbplug+eof)
 
-def create_files(id_cicliste, timestamp):
-    file_video=File.new_distance(id_cicliste,timestamp)
-    print(file_video)
-    file_sound=File.new_video(id_cicliste,timestamp)
-    print(file_sound)
-    file_gps=File.new_gps(id_cicliste,timestamp)
-    print(file_gps)
-    file_distance=File.new_sound(id_cicliste,timestamp)
-    print(file_distance)
-
 #####################
 #Generer les commandes
 #####################
 
 
 if __name__ == '__main__':
-
-    timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
-    create_files(id_cicliste, timestamp)
-    a, b, c, d = File.start(id_cicliste,timestamp)
-    print (a, b,c,d)
-
-
 
     #Signal of connected device
     ser3.write(page1+eof) # acces a la page 1 / menu
@@ -388,6 +371,7 @@ if __name__ == '__main__':
                     previousDistTime = 0                
                     ser.open()
                     ser2.open()
+
                     print("Begin recording video")
                     ser3.write(P1+eof) #signal of recording video                               
                     cam=Process(target = getCamera, args=(timestamp,file_video,r1,r2,))
@@ -399,9 +383,9 @@ if __name__ == '__main__':
                     mic.start()
 
                     #Prepare de file csv for writing                    
-                    with open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp), 'a') as distance_csv:
+                    with open(file_distance, 'a') as distance_csv:
                         distance_csv.write("time,distance\n")
-                    with open('/home/pi/Desktop/Capteur/files/gps/ID1_C1_{}.csv'.format(timestamp), 'a') as GPS_csv:
+                    with open(file_gps, 'a') as GPS_csv:
                         GPS_csv.write("time,latitude,longitude\n")
 
                     while Record==True:
@@ -414,9 +398,8 @@ if __name__ == '__main__':
                         distanceScreen(distance)
                         if distance>0 and distance <= maximumDistance:
                             #print(hour,distance)                            
-                            with open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp), 'a') as distance_test:
+                            with open(file_distance, 'a') as distance_test:
                                 distance_test.write(hour + ',' + str(distance) +  '\n')
-                            #file1.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None                        
 
@@ -429,7 +412,7 @@ if __name__ == '__main__':
                         if gps!= None:
                             print(hour,gps)
                             gpsScreen(gps)
-                            with open('/home/pi/Desktop/Capteur/files/gps/ID1_C1_{}.csv'.format(timestamp), 'a') as GPS_csv:
+                            with open(file_gps, 'a') as GPS_csv:
                                 GPS_csv.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
 
                         if stop==b'stop':
