@@ -158,6 +158,7 @@ def getCamera (timestamp,file_video,r1,r2):
         camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         camera.annotate_text_size=12
         camera.start_recording(file_video)
+        print(5)
         #camera.video_stabilization
         start=dt.datetime.now()
         while (dt.datetime.now()-start).seconds < 5000: #time of recording in seconds
@@ -267,48 +268,10 @@ def ExportFiles ():
                 print ('Error exportation, no txt file')
 
 def DeleteFiles ():
-    Folder1 = Path("/home/pi/Desktop/Capteur/files/distance")
-    #Folder2 = Path("/home/pi/Desktop/Capteur/files/videostructured")
-    Folder3 = Path("/home/pi/Desktop/Capteur/files/gps")
-    Folder4 = Path("/home/pi/Desktop/Capteur/files/video")
-    Folder5 = Path("/home/pi/Desktop/Capteur/files/sound")
-    Folder6 = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
+    list_file= File.get_all_files()
+    for element in list_file:
+        os.remove(element)
 
-    distanceF = Folder1.files("*.csv")
-    #videostructuredF = Folder2.files("*.mp4")
-    gpsf = Folder3.files("*.csv")
-    videoF = Folder4.files("*.h264")
-    soundf = Folder5.files("*.wav")
-    videoFS = Folder6.files("*.mp4")
-
-    Set1 = set(distanceF)
-    #Set2 = set(videostructuredF)
-    Set3 = set(gpsf)
-    Set4 = set(videoF)
-    Set5 = set(soundf)
-    Set6 = set(videoFS)
-
-    #print (Set1)
-
-    if len(Set1)>0 :
-        for name in Set1 :
-            os.remove(name)
-
-    if len(Set3)>0 :
-        for name in Set3 :
-            os.remove(name)
-
-    if len(Set4)>0 :
-        for name in Set4 :
-            os.remove(name)
-
-    if len(Set5)>0 :
-        for name in Set5 :
-            os.remove(name)
-
-    if len(Set6)>0 :
-        for name in Set6 :
-            os.remove(name)
 
 def HourScreenMenu ():
     hour=dt.datetime.now().strftime('%H:%M:%S')
@@ -339,7 +302,6 @@ def PresenceUsb ():
 #####################
 #Generer les commandes
 #####################
-
 
 if __name__ == '__main__':
 
