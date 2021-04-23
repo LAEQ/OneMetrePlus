@@ -25,6 +25,9 @@ import subprocess
 from path import Path
 import fnmatch
 
+from config_test import Config
+File = Config("/home/pi/Desktop/Capteur/files")
+
 #####################
 #Global variables
 #####################
@@ -43,6 +46,7 @@ distinit=0 #initial distance
 # Camera resolution 
 r1 = 400 #camera resolution
 r2 = 300 #camera resolution
+id_cicliste = "ID1_C1"
 
 #####################
 #Serial Instructions for screen
@@ -144,7 +148,7 @@ def getGpsData():
             except pynmea2.nmea.ParseError as e:
                 print('Unable to parse data{}'.format(e))
 
-def getCamera (timestamp,r1,r2):
+def getCamera (timestamp,file_video,r1,r2):
     with picamera.PiCamera () as camera:        
         camera.resolution = (r1,r2)
         camera.framerate = 24
@@ -153,7 +157,7 @@ def getCamera (timestamp,r1,r2):
         camera.annotate_background = picamera.Color('black')
         camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         camera.annotate_text_size=12
-        camera.start_recording('/home/pi/Desktop/Capteur/files/video/ID1_C1_{}.h264'.format(timestamp))
+        camera.start_recording(file_video)
         #camera.video_stabilization
         start=dt.datetime.now()
         while (dt.datetime.now()-start).seconds < 5000: #time of recording in seconds
@@ -162,9 +166,9 @@ def getCamera (timestamp,r1,r2):
         camera.stop_recording()
         #ser3.write(P2+eof) #signal of stop recording        
 
-def getMic (timestamp):
+def getMic (timestamp,file_sound):
     time.sleep(0.6)
-    outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+'/home/pi/Desktop/Capteur/files/sound/ID1_C1_'+timestamp+'.wav'
+    outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+ file_sound
     print (outputMic)
     #subprocess.call(args=[outputMic],shell=True)
     os.system(outputMic)
@@ -332,17 +336,29 @@ def PresenceUsb ():
                 if name == 'LAEQ.txt':
                     ser3.write(Usbplug+eof)
 
-def Function_test_csv(timestamp, distance):
-    with open('test2.txt', 'a') as distance_test:
-        distance_test.write(timestamp + ',' + str(distance) +  '\n')
-    
-    
+def create_files(id_cicliste, timestamp):
+    file_video=File.new_distance(id_cicliste,timestamp)
+    print(file_video)
+    file_sound=File.new_video(id_cicliste,timestamp)
+    print(file_sound)
+    file_gps=File.new_gps(id_cicliste,timestamp)
+    print(file_gps)
+    file_distance=File.new_sound(id_cicliste,timestamp)
+    print(file_distance)
+
 #####################
 #Generer les commandes
 #####################
 
 
 if __name__ == '__main__':
+
+    timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
+    create_files(id_cicliste, timestamp)
+    a, b, c, d = File.start(id_cicliste,timestamp)
+    print (a, b,c,d)
+
+
 
     #Signal of connected device
     ser3.write(page1+eof) # acces a la page 1 / menu
@@ -363,18 +379,23 @@ if __name__ == '__main__':
                 HourRecordMenu () #Hour
                 
                 if start==b'start':    #start process of: camera, gps and distance sensor.                 
+
+                    timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
+                    file_video, file_sound, file_distance, file_gps= File.start(id_cicliste,timestamp)   
+
+
                     previousGpsTime = 0
-                    previousDistTime = 0
-                    timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+                    previousDistTime = 0                
                     ser.open()
                     ser2.open()
                     print("Begin recording video")
-                    ser3.write(P1+eof) #signal of recording video                  
-                    cam=Process(target = getCamera, args=(timestamp,r1,r2,))
+                    ser3.write(P1+eof) #signal of recording video                               
+                    cam=Process(target = getCamera, args=(timestamp,file_video,r1,r2,))
                     cam.start()
+
                     print("Begin recording audio")
                     ser3.write(Mic+eof) #signal of recording audio 
-                    mic=Process(target = getMic, args=(timestamp,))
+                    mic=Process(target = getMic, args=(timestamp,file_sound))
                     mic.start()
 
                     #Prepare de file csv for writing                    
@@ -392,8 +413,7 @@ if __name__ == '__main__':
                         distance=getTFminiData(unit,distinit)
                         distanceScreen(distance)
                         if distance>0 and distance <= maximumDistance:
-                            print(hour,distance)
-                            Function_test_csv(hour,distance)
+                            #print(hour,distance)                            
                             with open('/home/pi/Desktop/Capteur/files/distance/ID1_C1_{}.csv'.format(timestamp), 'a') as distance_test:
                                 distance_test.write(hour + ',' + str(distance) +  '\n')
                             #file1.write(hour + ',' + str(distance) +  '\n')
