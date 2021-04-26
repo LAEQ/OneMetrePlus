@@ -326,6 +326,42 @@ def sound_record_start():
     print("Begin recording audio")
     ser3.write(Mic+eof) #signal of recording audio 
 
+def delete_files_start():
+    print ("Begind delete files")
+    return ser3.write(pdelete+eof)
+
+def delete_files_end():
+    print ("End delete files")
+    return ser3.write(pfinish+eof)
+
+def return_menu():
+    return ser3.write(page1+eof)
+
+def export_files_start():
+    print ("Begin export files")
+    return ser3.write(pexport+eof)
+
+def export_files_end():
+    print ("Succes in export files")
+    ser3.write(pendexport+eof)
+    ser3.write(Finishexport+eof)
+
+def export_files_error():
+    print ("Error in export files")
+    return ser3.write(perrorexport+eof)
+
+def convert_files_start():
+    print ("Begin convert files")
+    return ser3.write(pconvert+eof)
+
+def convert_files_end():
+    print("Succes in convert files")
+    ser3.write(pendconvert+eof)
+    ser3.write(Finishconvert+eof)
+
+def convert_files_error():
+    print ("Error in convert files")
+    return ser3.write(perrorconvert+eof)
 
 #####################
 #Generer les commandes
@@ -478,27 +514,23 @@ if __name__ == '__main__':
                     pass
 
             if capture==b'convert': #convert button
-                print ("Begin convert files")
-                ser3.write(pconvert+eof)
+                convert_files_start()
                 try:
                     export_video ()
-                    ser3.write(pendconvert+eof)
-                    ser3.write(Finishconvert+eof)
+                    convert_files_end()
                 except:
-                    ser3.write(perrorconvert+eof)
+                    convert_files_error()
                 finally:
                     pass                
                 print ("End convert files")
                     
             if capture==b'export': #export button
-                print ("Begin export files")
-                ser3.write(pexport+eof)
+                export_files_start()
                 try:
                     export_files ()
-                    ser3.write(pendexport+eof)
-                    ser3.write(Finishexport+eof)
+                    export_files_end()
                 except:
-                    ser3.write(perrorexport+eof)
+                    export_files_error()
                 finally:
                     pass
                 print ("End export files")
@@ -519,19 +551,17 @@ if __name__ == '__main__':
                 page_counter=b''
 
             if delete==b'delete': #Delete button
-                print ("Begind delete files")
-                ser3.write(pdelete+eof)
+                delete_files_start()
                 try: 
                     delete_files()
-                    ser3.write(pfinish+eof)
-                    print ("End delete files")
+                    delete_files_end()
                 except:
                     pass
                 finally:
                     pass 
                 page_counter=b''
                 delete=b''                
-                ser3.write(page1+eof)
+                return_menu() #Best for user experience
                     
 
 
