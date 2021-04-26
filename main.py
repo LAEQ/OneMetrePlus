@@ -42,13 +42,14 @@ initial_distance=0 #initial distance
 unit=1 #cm ref
 cm = 1
 inch=0.393701
+id_cicliste = "ID1_C1"
 
 x=0
-distanceref=0
 
 
 
-id_cicliste = "ID1_C1"
+
+
 
 #####################
 #Serial Instructions for screen
@@ -102,9 +103,6 @@ page_counter=b'' #page counter between raspberry pi and nextion screen
 
 subdirectory = "/media/pi/"
 
-
-
-
 #####################
 #Ports USB
 #####################
@@ -115,7 +113,6 @@ ser2.close()
 ser3 = serial.Serial(port='/dev/ttyUSB2',baudrate=115200, #ecran
         parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,
 	bytesize=serial.EIGHTBITS,timeout=0.01)
-
 
 #####################
 #Fonctions
@@ -153,7 +150,7 @@ def get_gps_data():
             except pynmea2.nmea.ParseError as e:
                 print('Unable to parse data{}'.format(e))
 
-def get_camera (timestamp,file_video,camera_resolution_width,camera_resolution_height):
+def get_camera(timestamp,file_video,camera_resolution_width,camera_resolution_height):
     with picamera.PiCamera () as camera:        
         camera.resolution = (camera_resolution_width,camera_resolution_height)
         camera.framerate = 24
@@ -172,17 +169,14 @@ def get_camera (timestamp,file_video,camera_resolution_width,camera_resolution_h
         camera.stop_recording()
         #ser3.write(P2+eof) #signal of stop recording        
 
-def get_microphone (timestamp,file_sound):
+def get_microphone(timestamp,file_sound):
     time.sleep(0.6)
     outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+ file_sound
     print (outputMic)
-    #subprocess.call(args=[outputMic],shell=True)
     os.system(outputMic)
-    #ser3.write(Mic2+eof)
 
 def distance_screen(distance):
     x = distance
-    #print(x)
     y = b'"%d"'%x
     if x == 0:
         ser3.write(P42+eof)
@@ -210,7 +204,7 @@ def gps_screen(gps):
     else:
         ser3.write(gp+eof)
 
-def export_video ():
+def export_video():  ####A regarder
     InPutFolder = Path("/home/pi/Desktop/Capteur/files/video")
     InputSoundFolder = Path("/home/pi/Desktop/Capteur/files/sound")
     OutPutFinalFolder = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
@@ -247,7 +241,7 @@ def export_video ():
         print("Executing this command : "+thisCommande)
         os.system(thisCommande)
 
-def export_files ():
+def export_files():
     InPutFolder = Path("/home/pi/Desktop/Capteur/files")
     subdirectory = "/media/pi/"
 
@@ -264,30 +258,30 @@ def export_files ():
             else:
                 print ('Error exportation, no txt file')
 
-def delete_files ():
+def delete_files():
     list_file= File.get_all_files()
     for element in list_file:
         os.remove(element)
 
-def menu_hour ():
+def menu_hour():
     hour=dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"'%hour
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t15+hourstrb+eof)
 
-def menu_date ():
+def menu_date():
     date=dt.datetime.now().strftime('%Y-%m-%d')
     datestr = '"%s"'%date
     datestrb = bytes(datestr, 'utf-8')
     ser3.write(t16+datestrb+eof)
 
-def menu_record_hour ():
+def menu_record_hour():
     hour=dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"'%hour
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t14+hourstrb+eof)
 
-def usb_connected ():
+def usb_connected():
     #Icon ok for usb connected
     for root, dirs, files in os.walk(subdirectory):
         for name in files:
@@ -311,7 +305,7 @@ def acces_menu():
 def raspberry_connection():
     return ser3.write(RP1+eof)
 
-def clean_screen ():
+def clean_screen():
     ser3.write(P2+eof)
     ser3.write(RP2+eof)
     ser3.write(gp2+eof)
@@ -388,17 +382,17 @@ def unit_system(format_serial):
 if __name__ == '__main__':
 
     #Signal of connected device
-    acces_menu () # acces a la page 1 / menu
+    acces_menu() # acces a la page 1 / menu
 
     while True: #page 1 /  menu
         page_counter=ser3.readline()       
-        menu_hour () #Hour
-        menu_date () #Date
+        menu_hour() #Hour
+        menu_date() #Date
 
         while page_counter==b'page2': #page 2 /  record
             
-            clean_screen ()
-            raspberry_connection () #Rpi connected
+            clean_screen()
+            raspberry_connection() #Rpi connected
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
@@ -510,9 +504,7 @@ if __name__ == '__main__':
         while page_counter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
             capture=ser3.readline()
-
-            #identifies the presence of a connected usb
-            usb_connected()
+            usb_connected() #identifies the presence of a connected usb
 
             if capture==b'page1': #in/out menu setup
                 page_counter=b''
@@ -576,7 +568,7 @@ if __name__ == '__main__':
                     pass 
                 page_counter=b''
                 delete=b''                
-                return_menu() #Best for user experience
+                return_menu() #return directly over the menu, best for user experience
                     
 
 
