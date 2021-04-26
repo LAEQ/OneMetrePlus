@@ -43,8 +43,8 @@ cm = 1
 inch=0.393701
 distinit=0 #initial distance
 # Camera resolution 
-r1 = 400 #camera resolution
-r2 = 300 #camera resolution
+camera_resolution_width = 400 #camera resolution
+camera_resolution_height = 300 #camera resolution
 id_cicliste = "ID1_C1"
 
 #####################
@@ -147,9 +147,9 @@ def getGpsData():
             except pynmea2.nmea.ParseError as e:
                 print('Unable to parse data{}'.format(e))
 
-def getCamera (timestamp,file_video,r1,r2):
+def getCamera (timestamp,file_video,camera_resolution_width,camera_resolution_height):
     with picamera.PiCamera () as camera:        
-        camera.resolution = (r1,r2)
+        camera.resolution = (camera_resolution_width,camera_resolution_height)
         camera.framerate = 24
         #camera.start_preview(fullscreen=False,window=(100,200,300,300))
         camera.rotation = 180
@@ -299,13 +299,13 @@ def PresenceUsb ():
 
 def camera_resolution(capture):
     if capture==b'800':
-        r1,r2=800,600
+        camera_resolution_width,camera_resolution_height=800,600
     if capture==b'600':
-        r1,r2=600,450
+        camera_resolution_width,camera_resolution_height=600,450
     if capture==b'400':
-        r1,r2=400,300
-    print ("Camera resolution:",r1,r2)
-    return r1,r2
+        camera_resolution_width,camera_resolution_height=400,300
+    print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
+    return camera_resolution_width,camera_resolution_height
 
 
 
@@ -327,7 +327,6 @@ if __name__ == '__main__':
             #Clean the screen
             cleanScreen ()
             ser3.write(RP1+eof) #Rpi connected
-            print (r1,r2)
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
@@ -347,7 +346,7 @@ if __name__ == '__main__':
 
                     print("Begin recording video")
                     ser3.write(P1+eof) #signal of recording video                               
-                    cam=Process(target = getCamera, args=(timestamp,file_video,r1,r2,))
+                    cam=Process(target = getCamera, args=(timestamp,file_video,camera_resolution_width,camera_resolution_height,))
                     cam.start()
 
                     print("Begin recording audio")
@@ -491,7 +490,7 @@ if __name__ == '__main__':
 
             if capture==b'800'or capture==b'600' or capture==b'400': #Resolution button 800x600
                 try:
-                    r1,r2=camera_resolution(capture)
+                    camera_resolution_width,camera_resolution_height=camera_resolution(capture)
                 except:
                     pass
                 finally:
