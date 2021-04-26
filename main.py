@@ -31,10 +31,9 @@ File = Config("/home/pi/Desktop/Capteur/files")
 #####################
 #Global variables
 #####################
-tfminiperiod = 1
-gpsperiod = 250
-touchperiod = 200
-maximumDistance = 300
+gps_period_capture = 250
+maximum_sensor_distance = 300  #unit in cm
+
 start=b''
 Record=True
 x=0
@@ -272,7 +271,6 @@ def DeleteFiles ():
     for element in list_file:
         os.remove(element)
 
-
 def HourScreenMenu ():
     hour=dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"'%hour
@@ -299,6 +297,18 @@ def PresenceUsb ():
                 if name == 'LAEQ.txt':
                     ser3.write(Usbplug+eof)
 
+def camera_resolution(capture):
+    if capture==b'800':
+        r1,r2=800,600
+    if capture==b'600':
+        r1,r2=600,450
+    if capture==b'400':
+        r1,r2=400,300
+    print ("Camera resolution:",r1,r2)
+    return r1,r2
+
+
+
 #####################
 #Generer les commandes
 #####################
@@ -309,7 +319,7 @@ if __name__ == '__main__':
     ser3.write(page1+eof) # acces a la page 1 / menu
 
     while True: #page 1 /  menu
-        pagecounter=ser3.readline()         
+        pagecounter=ser3.readline()       
         HourScreenMenu () #Hour
         DateScreenMenu () #Date
 
@@ -317,6 +327,7 @@ if __name__ == '__main__':
             #Clean the screen
             cleanScreen ()
             ser3.write(RP1+eof) #Rpi connected
+            print (r1,r2)
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
@@ -358,14 +369,14 @@ if __name__ == '__main__':
 
                         distance=getTFminiData(unit,distinit)
                         distanceScreen(distance)
-                        if distance>0 and distance <= maximumDistance:
+                        if distance>0 and distance <= maximum_sensor_distance:
                             #print(hour,distance)                            
                             with open(file_distance, 'a') as distance_test:
                                 distance_test.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None                        
 
-                        if currentTime - previousGpsTime > gpsperiod:
+                        if currentTime - previousGpsTime > gps_period_capture:
                             gps = getGpsData()
                             ser3.write(gp+eof)
                             print(gps)
@@ -407,6 +418,8 @@ if __name__ == '__main__':
                             ser2.close()
                             pagecounter=b''
 
+                if start==b'page1':    # In/out page1
+                    pagecounter=b''
             #return to 0
             cleanScreen()
             Record=True
@@ -476,20 +489,13 @@ if __name__ == '__main__':
                     pass
                 print ("End export files")
 
-            if capture==b'800': #Resolution button 800x600
-                r1 = 800
-                r2 = 600
-                print ("Camera resolution:",r1,r2)
-
-            if capture==b'600': #Resolution button 600x450
-                r1 = 600
-                r2 = 450
-                print ("Camera resolution:",r1,r2)
-
-            if capture==b'400': #Resolution button 400x300 for default
-                r1 = 400
-                r2 = 300
-                print ("Camera resolution:",r1,r2)
+            if capture==b'800'or capture==b'600' or capture==b'400': #Resolution button 800x600
+                try:
+                    r1,r2=camera_resolution(capture)
+                except:
+                    pass
+                finally:
+                    pass
 
         while pagecounter==b'page5': #page 5 /  Delete files
             #Reading input of screen touch nextion (waiting for delete files command)
