@@ -161,17 +161,16 @@ def get_gps_data2(file_gps):
         else: 
             ser3.write(gp+eof)
 
-def get_camera(timestamp,file_video,camera_resolution_width,camera_resolution_height):
+def get_camera(file_video,camera_resolution_width,camera_resolution_height):
     with picamera.PiCamera () as camera:        
         camera.resolution = (camera_resolution_width,camera_resolution_height)
-        camera.framerate = 24
+        camera.framerate = 25
         #camera.start_preview(fullscreen=False,window=(100,200,300,300))
         camera.rotation = 180
         camera.annotate_background = picamera.Color('black')
         camera.annotate_text=dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         camera.annotate_text_size=12
         camera.start_recording(file_video)
-        print(5)
         #camera.video_stabilization
         start=dt.datetime.now()
         while (dt.datetime.now()-start).seconds < 5000: #time of recording in seconds
@@ -300,11 +299,11 @@ def usb_connected():
                     ser3.write(Usbplug+eof)
 
 def camera_resolution(capture_serial):
-    if capture==b'800':
+    if capture_serial==b'800':
         camera_resolution_width,camera_resolution_height=800,600
-    if capture==b'600':
+    if capture_serial==b'600':
         camera_resolution_width,camera_resolution_height=600,450
-    if capture==b'400':
+    if capture_serial==b'400':
         camera_resolution_width,camera_resolution_height=400,300
     print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
     return camera_resolution_width,camera_resolution_height
@@ -410,7 +409,6 @@ if __name__ == '__main__':
                 menu_record_hour() #Hour for the menu record
                 
                 if start==b'start':    #start process of: camera, gps and distance sensor.  
-
                     ser.open()
                     ser2.open()
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
@@ -421,7 +419,7 @@ if __name__ == '__main__':
                         gps_csv.write("time,latitude,longitude\n")
                            
                     video_record_start() #signal of recording video                               
-                    camera_process=Process(target = get_camera, args=(timestamp,file_video,camera_resolution_width,camera_resolution_height,))
+                    camera_process=Process(target = get_camera, args=(file_video,camera_resolution_width,camera_resolution_height,))
                     camera_process.start()
                     # sound_record_start() #signal of recording audio 
                     # microphone_process=Process(target = get_microphone, args=(timestamp,file_sound))
@@ -438,8 +436,8 @@ if __name__ == '__main__':
                         distance_screen(distance)
                         if distance>0 and distance <= maximum_sensor_distance*unit:
                             #print(hour,distance)                            
-                            with open(file_distance, 'a') as distance_test:
-                                distance_test.write(hour + ',' + str(distance) +  '\n')
+                            with open(file_distance, 'a') as distance_csv:
+                                distance_csv.write(hour + ',' + str(distance) +  '\n')
 
                         if stop==b'stop':
                             record=False
@@ -477,6 +475,7 @@ if __name__ == '__main__':
 
                 if start==b'page1':    # In/out page1
                     page_counter=b''
+                    
             #return to 0
             clean_screen()
             record=True
