@@ -33,18 +33,20 @@ File = Config("/home/pi/Desktop/Capteur/files")
 #####################
 gps_period_capture = 250
 maximum_sensor_distance = 300  #unit in cm
-
+# Camera resolution 
+camera_resolution_width = 400 #camera resolution
+camera_resolution_height = 300 #camera resolution
 start=b''
-Record=True
+record=True
+
+
 x=0
 distanceref=0
 unit=1 #cm ref
 cm = 1
 inch=0.393701
-distinit=0 #initial distance
-# Camera resolution 
-camera_resolution_width = 400 #camera resolution
-camera_resolution_height = 300 #camera resolution
+initial_distance=0 #initial distance
+
 id_cicliste = "ID1_C1"
 
 #####################
@@ -95,9 +97,12 @@ page2= b'page 2' #page number for the record page
 
 picerror= b'p18.pic=35' #error image during recording in the record page (red rectangle with word error)
 
-pagecounter=b'' #page counter between raspberry pi and nextion screen 
+page_counter=b'' #page counter between raspberry pi and nextion screen 
 
 subdirectory = "/media/pi/"
+
+
+
 
 #####################
 #Ports USB
@@ -114,21 +119,21 @@ ser3 = serial.Serial(port='/dev/ttyUSB2',baudrate=115200, #ecran
 #####################
 #Fonctions
 #####################
-def getTFminiDataRef(unit):
+def get_tfmini_data_ref(unit):
     recv = ser.read(9)
     ser.reset_input_buffer()
     if recv[0] == 0x59 and recv[1] == 0x59:
         distance = ((recv[2] + recv[3] * 256)*unit)
         return distance
 
-def getTFminiData(unit,distinit):
+def get_tfmini_data(unit,initial_distance):
     recv = ser.read(9)
     ser.reset_input_buffer()
     if recv[0] == 0x59 and recv[1] == 0x59:
-        distance = ((recv[2] + recv[3] * 256)*unit)-(distinit*unit)
+        distance = ((recv[2] + recv[3] * 256)*unit)-(initial_distance*unit)
         return distance
 
-def getGpsData():
+def get_gps_data():
     #ser3.write(gp+eof)
     data = ser2.readline().decode('ascii', errors='replace')
     if 'GGA' in data:
@@ -147,7 +152,7 @@ def getGpsData():
             except pynmea2.nmea.ParseError as e:
                 print('Unable to parse data{}'.format(e))
 
-def getCamera (timestamp,file_video,camera_resolution_width,camera_resolution_height):
+def get_camera (timestamp,file_video,camera_resolution_width,camera_resolution_height):
     with picamera.PiCamera () as camera:        
         camera.resolution = (camera_resolution_width,camera_resolution_height)
         camera.framerate = 24
@@ -166,21 +171,13 @@ def getCamera (timestamp,file_video,camera_resolution_width,camera_resolution_he
         camera.stop_recording()
         #ser3.write(P2+eof) #signal of stop recording        
 
-def getMic (timestamp,file_sound):
+def get_microphone (timestamp,file_sound):
     time.sleep(0.6)
     outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+ file_sound
     print (outputMic)
     #subprocess.call(args=[outputMic],shell=True)
     os.system(outputMic)
     #ser3.write(Mic2+eof)
-
-def cleanScreen ():
-    ser3.write(P2+eof)
-    ser3.write(RP2+eof)
-    ser3.write(gp2+eof)
-    ser3.write(t2+dist0+eof)
-    ser3.write(P42+eof)
-    ser3.write(Mic2+eof)
 
 def distanceScreen(distance):
     x = distance
@@ -205,14 +202,14 @@ def distanceScreen(distance):
 
     #print (y)
 
-def gpsScreen(gps):
+def gps_screen(gps):
     x=gps[0]
     if x == 0:
         ser3.write(gp2+eof)
     else:
         ser3.write(gp+eof)
 
-def ExportVideo ():
+def export_video ():
     InPutFolder = Path("/home/pi/Desktop/Capteur/files/video")
     InputSoundFolder = Path("/home/pi/Desktop/Capteur/files/sound")
     OutPutFinalFolder = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
@@ -249,7 +246,7 @@ def ExportVideo ():
         print("Executing this command : "+thisCommande)
         os.system(thisCommande)
 
-def ExportFiles ():
+def export_files ():
     InPutFolder = Path("/home/pi/Desktop/Capteur/files")
     subdirectory = "/media/pi/"
 
@@ -266,30 +263,30 @@ def ExportFiles ():
             else:
                 print ('Error exportation, no txt file')
 
-def DeleteFiles ():
+def delete_files ():
     list_file= File.get_all_files()
     for element in list_file:
         os.remove(element)
 
-def HourScreenMenu ():
+def menu_hour ():
     hour=dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"'%hour
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t15+hourstrb+eof)
 
-def DateScreenMenu ():
+def menu_date ():
     date=dt.datetime.now().strftime('%Y-%m-%d')
     datestr = '"%s"'%date
     datestrb = bytes(datestr, 'utf-8')
     ser3.write(t16+datestrb+eof)
 
-def HourRecordMenu ():
+def menu_record_hour ():
     hour=dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"'%hour
     hourstrb = bytes(hourstr, 'utf-8')
     ser3.write(t14+hourstrb+eof)
 
-def PresenceUsb ():
+def usb_connected ():
     #Icon ok for usb connected
     for root, dirs, files in os.walk(subdirectory):
         for name in files:
@@ -307,6 +304,27 @@ def camera_resolution(capture):
     print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
     return camera_resolution_width,camera_resolution_height
 
+def acces_menu():
+    return ser3.write(page1+eof)
+
+def raspberry_connection():
+    return ser3.write(RP1+eof)
+
+def clean_screen ():
+    ser3.write(P2+eof)
+    ser3.write(RP2+eof)
+    ser3.write(gp2+eof)
+    ser3.write(t2+dist0+eof)
+    ser3.write(P42+eof)
+    ser3.write(Mic2+eof)
+
+def video_record_start():
+    print("Begin recording video")
+    return ser3.write(P1+eof)
+
+def sound_record_start():
+    print("Begin recording audio")
+    ser3.write(Mic+eof) #signal of recording audio 
 
 
 #####################
@@ -316,115 +334,111 @@ def camera_resolution(capture):
 if __name__ == '__main__':
 
     #Signal of connected device
-    ser3.write(page1+eof) # acces a la page 1 / menu
+    acces_menu () # acces a la page 1 / menu
 
     while True: #page 1 /  menu
-        pagecounter=ser3.readline()       
-        HourScreenMenu () #Hour
-        DateScreenMenu () #Date
+        page_counter=ser3.readline()       
+        menu_hour () #Hour
+        menu_date () #Date
 
-        while pagecounter==b'page2': #page 2 /  record
-            #Clean the screen
-            cleanScreen ()
-            ser3.write(RP1+eof) #Rpi connected
+        while page_counter==b'page2': #page 2 /  record
+            
+            clean_screen ()
+            raspberry_connection () #Rpi connected
 
             #Reading input of screen touch nextion (waiting: start)
             while start==b'':
                 start=ser3.readline() #reading serial port from the screen touch             
-                HourRecordMenu () #Hour
+                menu_record_hour() #Hour for the menu record
                 
                 if start==b'start':    #start process of: camera, gps and distance sensor.                 
 
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
-                    file_video, file_sound, file_distance, file_gps= File.start(id_cicliste,timestamp)   
+                    file_video, file_sound, file_distance, file_gps= File.start(id_cicliste,timestamp)   #path of every file 
 
+                    previous_gps_time = 0
 
-                    previousGpsTime = 0
-                    previousDistTime = 0                
                     ser.open()
                     ser2.open()
 
-                    print("Begin recording video")
-                    ser3.write(P1+eof) #signal of recording video                               
-                    cam=Process(target = getCamera, args=(timestamp,file_video,camera_resolution_width,camera_resolution_height,))
-                    cam.start()
+                    video_record_start() #signal of recording video                               
+                    camera_process=Process(target = get_camera, args=(timestamp,file_video,camera_resolution_width,camera_resolution_height,))
+                    camera_process.start()
 
-                    print("Begin recording audio")
-                    ser3.write(Mic+eof) #signal of recording audio 
-                    mic=Process(target = getMic, args=(timestamp,file_sound))
-                    mic.start()
+                    sound_record_start() #signal of recording audio 
+                    microphone_process=Process(target = get_microphone, args=(timestamp,file_sound))
+                    microphone_process.start()
 
-                    #Prepare de file csv for writing                    
-                    with open(file_distance, 'a') as distance_csv:
+                    with open(file_distance, 'a') as distance_csv: #Prepare de file csv for writing   
                         distance_csv.write("time,distance\n")
-                    with open(file_gps, 'a') as GPS_csv:
-                        GPS_csv.write("time,latitude,longitude\n")
+                    with open(file_gps, 'a') as gps_csv:
+                        gps_csv.write("time,latitude,longitude\n")
 
-                    while Record==True:
+                    while record==True:
                         stop=ser3.readline()
-                        HourRecordMenu ()
+                        menu_record_hour()
                         hour=dt.datetime.now().strftime('%H:%M:%S.%f')
-                        currentTime =int(round(time.perf_counter()*1000))
+                        current_time =int(round(time.perf_counter()*1000))
 
-                        distance=getTFminiData(unit,distinit)
+                        distance=get_tfmini_data(unit,initial_distance)
                         distanceScreen(distance)
-                        if distance>0 and distance <= maximum_sensor_distance:
+                        if distance>0 and distance <= maximum_sensor_distance*unit:
                             #print(hour,distance)                            
                             with open(file_distance, 'a') as distance_test:
                                 distance_test.write(hour + ',' + str(distance) +  '\n')
 
                         gps = None                        
 
-                        if currentTime - previousGpsTime > gps_period_capture:
-                            gps = getGpsData()
-                            ser3.write(gp+eof)
+                        if current_time - previous_gps_time > gps_period_capture:
+                            gps = get_gps_data()
+                            ser3.write(gp+eof)  ### a voir
                             print(gps)
-                            previousGpsTime = currentTime
+                            previous_gps_time = current_time
 
                         if gps!= None:
                             print(hour,gps)
-                            gpsScreen(gps)
-                            with open(file_gps, 'a') as GPS_csv:
-                                GPS_csv.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
+                            gps_screen(gps) ### a voir
+                            with open(file_gps, 'a') as gps_csv:
+                                gps_csv.write(str(hour) + ',' + str(gps[0]) + ',' + str(gps[1]) +  '\n')
 
                         if stop==b'stop':
-                            Record=False
+                            record=False
                             print("End recording video")
-                            cam.terminate()
-                            cam.join()
+                            camera_process.terminate()
+                            camera_process.join()
                             subprocess.call(['pkill arecord'],shell=True)
                             #os.system()
                             print("End recording audio")
-                            mic.terminate()
-                            mic.join()
+                            microphone_process.terminate()
+                            microphone_process.join()
                             start=0
                             ser.close()
                             ser2.close()
-                            pagecounter=b'page2'
+                            page_counter=b'page2'
 
                         if stop==b'page1':
-                            Record=False
+                            record=False
                             print("End recording video - page1")
-                            cam.terminate()
-                            cam.join()
+                            camera_process.terminate()
+                            camera_process.join()
                             subprocess.call(['pkill arecord'],shell=True)
                             #os.system('pkill arecord')
                             print("End recording audio - page1")
-                            mic.terminate()
-                            mic.join()
+                            microphone_process.terminate()
+                            microphone_process.join()
                             start=0
                             ser.close()
                             ser2.close()
-                            pagecounter=b''
+                            page_counter=b''
 
                 if start==b'page1':    # In/out page1
-                    pagecounter=b''
+                    page_counter=b''
             #return to 0
-            cleanScreen()
-            Record=True
+            clean_screen()
+            record=True
             start=b''
 
-        while pagecounter==b'page3': #page 3 /  setup
+        while page_counter==b'page3': #page 3 /  setup
             #Reading input of screen touch nextion (waiting: Value)
             Format=ser3.readline()
             #print ("config", Format)
@@ -435,26 +449,27 @@ if __name__ == '__main__':
                 unit = cm
                 print (unit)
             if Format==b'page1':
-                pagecounter=b''
+                page_counter=b''
 
-        while pagecounter==b'page4': #page 4 /  format
+        while page_counter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
             capture=ser3.readline()
+
             #identifies the presence of a connected usb
-            PresenceUsb ()
+            usb_connected()
 
             if capture==b'page1': #in/out menu setup
-                pagecounter=b''
+                page_counter=b''
 
             if capture==b'capture': #Reading distance of reference
                 try:
                     ser.open()
-                    distanceref =getTFminiDataRef(unit)
-                    y = b'"%d"'%distanceref
-                    if distanceref > 0 and distanceref <= 30:
+                    distance_ref =get_tfmini_data_ref(unit)
+                    y = b'"%d"'%distance_ref
+                    if distance_ref > 0 and distance_ref <= 30:
                         ser3.write(t8+y+eof)
-                        distinit=distanceref*unit
-                        print ('Initial distance:',distinit)
+                        initial_distance=distance_ref*unit
+                        print ('Initial distance:',initial_distance)
                         ser.close()
                     ser.close()
                 except:
@@ -466,7 +481,7 @@ if __name__ == '__main__':
                 print ("Begin convert files")
                 ser3.write(pconvert+eof)
                 try:
-                    ExportVideo ()
+                    export_video ()
                     ser3.write(pendconvert+eof)
                     ser3.write(Finishconvert+eof)
                 except:
@@ -479,7 +494,7 @@ if __name__ == '__main__':
                 print ("Begin export files")
                 ser3.write(pexport+eof)
                 try:
-                    ExportFiles ()
+                    export_files ()
                     ser3.write(pendexport+eof)
                     ser3.write(Finishexport+eof)
                 except:
@@ -488,7 +503,7 @@ if __name__ == '__main__':
                     pass
                 print ("End export files")
 
-            if capture==b'800'or capture==b'600' or capture==b'400': #Resolution button 800x600
+            if capture==b'800'or capture==b'600' or capture==b'400': #Resolution buttons
                 try:
                     camera_resolution_width,camera_resolution_height=camera_resolution(capture)
                 except:
@@ -496,25 +511,25 @@ if __name__ == '__main__':
                 finally:
                     pass
 
-        while pagecounter==b'page5': #page 5 /  Delete files
+        while page_counter==b'page5': #page 5 /  Delete files
             #Reading input of screen touch nextion (waiting for delete files command)
             delete=ser3.readline()
 
             if delete==b'page1': #in/out menu setup
-                pagecounter=b''
+                page_counter=b''
 
             if delete==b'delete': #Delete button
                 print ("Begind delete files")
                 ser3.write(pdelete+eof)
                 try: 
-                    DeleteFiles ()
+                    delete_files()
                     ser3.write(pfinish+eof)
                     print ("End delete files")
                 except:
                     pass
                 finally:
                     pass 
-                pagecounter=b''
+                page_counter=b''
                 delete=b''                
                 ser3.write(page1+eof)
                     
