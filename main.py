@@ -38,14 +38,15 @@ camera_resolution_width = 400 #camera resolution
 camera_resolution_height = 300 #camera resolution
 start=b''
 record=True
-
-
-x=0
-distanceref=0
+initial_distance=0 #initial distance
 unit=1 #cm ref
 cm = 1
 inch=0.393701
-initial_distance=0 #initial distance
+
+x=0
+distanceref=0
+
+
 
 id_cicliste = "ID1_C1"
 
@@ -179,7 +180,7 @@ def get_microphone (timestamp,file_sound):
     os.system(outputMic)
     #ser3.write(Mic2+eof)
 
-def distanceScreen(distance):
+def distance_screen(distance):
     x = distance
     #print(x)
     y = b'"%d"'%x
@@ -363,6 +364,23 @@ def convert_files_error():
     print ("Error in convert files")
     return ser3.write(perrorconvert+eof)
 
+def distance_screen_ref(distance_ref):
+    y = b'"%d"'%distance_ref
+    if distance_ref > 0 and distance_ref <= 50:
+        ser3.write(t8+y+eof)
+        initial_distance=distance_ref*unit
+        print ('Initial distance:',initial_distance)
+        return initial_distance
+
+def unit_system(format_serial):
+    if format_serial==b'in':
+        unit = inch
+        print ("Imperial system", unit)
+    if format_serial==b'cm':
+        unit = cm
+        print ("Metric system", unit)
+    return unit
+
 #####################
 #Generer les commandes
 #####################
@@ -417,7 +435,7 @@ if __name__ == '__main__':
                         current_time =int(round(time.perf_counter()*1000))
 
                         distance=get_tfmini_data(unit,initial_distance)
-                        distanceScreen(distance)
+                        distance_screen(distance)
                         if distance>0 and distance <= maximum_sensor_distance*unit:
                             #print(hour,distance)                            
                             with open(file_distance, 'a') as distance_test:
@@ -476,16 +494,18 @@ if __name__ == '__main__':
 
         while page_counter==b'page3': #page 3 /  setup
             #Reading input of screen touch nextion (waiting: Value)
-            Format=ser3.readline()
-            #print ("config", Format)
-            if Format==b'in':
-                unit = inch
-                print (unit)
-            if Format==b'cm':
-                unit = cm
-                print (unit)
-            if Format==b'page1':
+            format_serial=ser3.readline()
+
+            if format_serial==b'page1': #In/out page 2
                 page_counter=b''
+
+            if format_serial==b'in' or format_serial==b'cm':
+                try:
+                    unit=unit_system(format_serial)
+                except:
+                    pass
+                finally:
+                    pass
 
         while page_counter==b'page4': #page 4 /  format
             #Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
@@ -500,13 +520,8 @@ if __name__ == '__main__':
             if capture==b'capture': #Reading distance of reference
                 try:
                     ser.open()
-                    distance_ref =get_tfmini_data_ref(unit)
-                    y = b'"%d"'%distance_ref
-                    if distance_ref > 0 and distance_ref <= 30:
-                        ser3.write(t8+y+eof)
-                        initial_distance=distance_ref*unit
-                        print ('Initial distance:',initial_distance)
-                        ser.close()
+                    distance_ref = get_tfmini_data_ref(unit)
+                    initial_distance = distance_screen_ref(distance_ref)                      
                     ser.close()
                 except:
                     pass
