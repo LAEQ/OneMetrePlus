@@ -231,21 +231,24 @@ def convert_video(config):
         os.system(thisCommande)
 
 def export_files():
-    InPutFolder = Path("/home/pi/Sensor")
-    subdirectory = "/media/pi/"
+    input_folder = Path("/home/pi/Sensor")
+    sub_directory = "/media/pi/"
 
-    for root, dirs, files in os.walk(subdirectory):
+    for root, dirs, files in os.walk(sub_directory):
         for name in files:
             if fnmatch.fnmatch(name, '*.txt'):
                 if name == 'LAEQ.txt':
-                    Subfolder = root
-                    OutPutFolder = Path(Subfolder)
-                    print(InPutFolder,OutPutFolder)
-                    os.system('cp -r '+ InPutFolder +' '+ OutPutFolder)
+                    sub_folder = root
+                    output_folder = Path(sub_folder)
+                    print(input_folder,output_folder)
+                    os.system('cp -r '+ input_folder +' '+ output_folder)
                     print (os.path.join(root, name))
-                    os.system('umount '+OutPutFolder)
+                    os.system('umount '+output_folder)
+                    return (True)
             else:
-                print ('Error exportation, no txt file')
+                print ('Error export, no txt file in usb')
+    else:
+        return (False)
 
 def delete_files():
     list_file= config.get_all_files()
@@ -325,10 +328,16 @@ def export_files_start():
     print ("Begin export files")
     return ser3.write(pexport+eof)
 
-def export_files_end():
-    print ("Succes in export files")
-    ser3.write(pendexport+eof)
-    ser3.write(Finishexport+eof)
+def export_files_end(export):
+    if export==False:
+        print ("No usb connected")
+        ser3.write(pendexport+eof)
+        ser3.write(perrorexport+eof)
+
+    if export==True:
+        print ("Succes in export files")
+        ser3.write(pendexport+eof)
+        ser3.write(Finishexport+eof)
 
 def export_files_error():
     print ("Error in export files")
@@ -373,8 +382,6 @@ def unit_system(format_serial):
 if __name__ == '__main__':
 
     config = Config("/home/pi/Sensor/")
-    #print (config.get_export())
-    #Signal of connected device
     acces_menu() # acces a la page 1 / menu
 
     while True: #page 1 /  menu
@@ -511,8 +518,8 @@ if __name__ == '__main__':
             if capture_serial==b'export': #export button
                 export_files_start()
                 try:
-                    export_files ()
-                    export_files_end()
+                    export=export_files ()
+                    export_files_end(export)
                 except:
                     export_files_error()
                 finally:
