@@ -73,4 +73,4 @@ class Config:
         return zip(video_files, sound_files)
 
     def get_all_files(self):
-        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance()
+        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance() +self.get_export()
