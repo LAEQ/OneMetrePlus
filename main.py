@@ -34,8 +34,8 @@ from config_test import Config
 gps_period_capture = 300
 maximum_sensor_distance = 300  #unit in cm
 # Camera resolution 
-camera_resolution_width = 400 #camera resolution
-camera_resolution_height = 300 #camera resolution
+camera_resolution_width = 480 #camera resolution
+camera_resolution_height = 270 #camera resolution
 start=b''
 record=True
 initial_distance=0 #initial distance
@@ -96,8 +96,6 @@ page2= b'page 2' #page number for the record page
 picerror= b'p18.pic=35' #error image during recording in the record page (red rectangle with word error)
 
 page_counter=b'' #page counter between raspberry pi and nextion screen 
-
-subdirectory = "/media/pi/"
 
 #####################
 #Ports USB
@@ -274,6 +272,7 @@ def menu_record_hour():
     ser3.write(t14+hourstrb+eof)
 
 def usb_connected():
+    subdirectory = "/media/pi/"
     #Icon ok for usb connected
     for root, dirs, files in os.walk(subdirectory):
         for name in files:
@@ -282,12 +281,12 @@ def usb_connected():
                     ser3.write(Usbplug+eof)
 
 def camera_resolution(capture_serial):
-    if capture_serial==b'800':
-        camera_resolution_width,camera_resolution_height=800,600
-    if capture_serial==b'600':
-        camera_resolution_width,camera_resolution_height=600,450
-    if capture_serial==b'400':
-        camera_resolution_width,camera_resolution_height=400,300
+    if capture_serial==b'960':
+        camera_resolution_width,camera_resolution_height=960,540
+    if capture_serial==b'720':
+        camera_resolution_width,camera_resolution_height=720,405
+    if capture_serial==b'480':
+        camera_resolution_width,camera_resolution_height=480,270
     print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
     return camera_resolution_width,camera_resolution_height
 
@@ -526,7 +525,7 @@ if __name__ == '__main__':
                     pass
                 print ("End export files")
 
-            if capture_serial==b'800'or capture_serial==b'600' or capture_serial==b'400': #Resolution buttons
+            if capture_serial==b'960'or capture_serial==b'720' or capture_serial==b'480': #Resolution buttons
                 try:
                     camera_resolution_width,camera_resolution_height=camera_resolution(capture_serial)
                 except:
