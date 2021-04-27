@@ -26,7 +26,7 @@ from path import Path
 import fnmatch
 
 from config_test import Config
-File = Config("/home/pi/Desktop/Capteur/files")
+
 
 #####################
 #Global variables
@@ -214,9 +214,9 @@ def gps_screen(lat):
         ser3.write(gp+eof)
 
 def export_video():  ####A regarder
-    InPutFolder = Path("/home/pi/Desktop/Capteur/files/video")
-    InputSoundFolder = Path("/home/pi/Desktop/Capteur/files/sound")
-    OutPutFinalFolder = Path("/home/pi/Desktop/Capteur/files/videostructuredsound")
+    InPutFolder = Path("/home/pi/Sensor/video")
+    InputSoundFolder = Path("/home/pi/Sensor/sound")
+    OutPutFinalFolder = Path("/home/pi/Sensor/export")
 
 
     original_videos = InPutFolder.files("*.h264")
@@ -251,7 +251,7 @@ def export_video():  ####A regarder
         os.system(thisCommande)
 
 def export_files():
-    InPutFolder = Path("/home/pi/Desktop/Capteur/files")
+    InPutFolder = Path("/home/pi/Sensor")
     subdirectory = "/media/pi/"
 
     for root, dirs, files in os.walk(subdirectory):
@@ -390,6 +390,7 @@ def unit_system(format_serial):
 
 if __name__ == '__main__':
 
+    File = Config("/home/pi/Sensor/")
     #Signal of connected device
     acces_menu() # acces a la page 1 / menu
 
@@ -475,7 +476,7 @@ if __name__ == '__main__':
 
                 if start==b'page1':    # In/out page1
                     page_counter=b''
-                    
+
             #return to 0
             clean_screen()
             record=True

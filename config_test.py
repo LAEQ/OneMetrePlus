@@ -2,9 +2,9 @@ import os
 import glob
 
 class Config:
-    def __init__(self, home="/home/pi/Desktop/Capteur/files"):
+    def __init__(self, home="/home/pi/Sensor/"):
         self.home = home
-        self.directories = ["sound", "video", "gps", "distance", "videostructuredsound"]
+        self.directories = ["sound", "video", "gps", "distance", "export"]
         self.dir_paths = [os.path.join(self.home, folder) for folder in self.directories]
     
     #         # Create app structure
