@@ -59,6 +59,9 @@ class Config:
 
     def get_distance(self):
         return glob.glob(os.path.join(self.distance_path(), "*"))
+    
+    def get_export(self):
+        return glob.glob(os.path.join(self.export_path(), "*"))
 
     def get_video_sound_tuples(self):
         video_files = self.get_videos()

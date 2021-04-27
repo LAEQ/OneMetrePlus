@@ -213,40 +213,20 @@ def gps_screen(lat):
     else:
         ser3.write(gp+eof)
 
-def export_video():  ####A regarder
-    InPutFolder = Path("/home/pi/Sensor/video")
-    InputSoundFolder = Path("/home/pi/Sensor/sound")
-    OutPutFinalFolder = Path("/home/pi/Sensor/export")
+def convert_video(config):
 
+    list_export=config.get_export() 
+    if len(list_export)>0 :
+        for element in list_export:
+            os.remove(element)
 
-    original_videos = InPutFolder.files("*.h264")
-    original_sound = InputSoundFolder.files("*.wav")
-    exported_sound_videos = OutPutFinalFolder.files("*.mp4")
-
-    original_names = [videopath.name.split('.')[0] for videopath in original_videos]
-    original_sound_names = [videopath.name.split('.')[0] for videopath in original_sound]
-    exported_sound_names = [videopath.name.split('.')[0] for videopath in exported_sound_videos]
-
-    Set1 = set(original_names)
-    Set3 = set(original_sound_names)
-    Set4 = set(exported_sound_names)
-
-    comp = Set1.intersection(Set4)
-
-    if len(comp)>0 :
-        for name in comp :
-            out_path = OutPutFinalFolder.joinpath(name+'.mp4')
-            os.remove(out_path)
-
-    Videos = InPutFolder.walkfiles("*.h264")
-    Commandes = []
-    #ffmpeg -i video/ID1_C1_2021_04_21_12_50_40.h264 -i sound/ID1_C1_2021_04_21_12_50_40.wav  -c:v copy -c:a aac -shortest videostructuredsound/ID1_C1_2021_04_21_12_50_40.mp4
-    BaseCommande = 'ffmpeg -i "++Inputvideo++" -i "++Inputsound++" -c:v copy -c:a aac -shortest "++Output++"'
-    for Video in Videos :
-        Inputvideo = Video
-        Inputsound = InputSoundFolder.joinpath(Video.name)
-        Output = OutPutFinalFolder.joinpath(Video.name)
-        thisCommande = BaseCommande.replace("++Inputvideo++",Inputvideo.replace("\\","/")).replace("++Inputsound++",Inputsound.replace(".h264",".wav")).replace("++Output++",Output.replace(".h264",".mp4"))
+    list_videos=config.get_videos()
+    BaseCommande = 'ffmpeg -i "++input_video++" -i "++input_sound++" -c:v copy -c:a aac -shortest "++out_put++"'
+    for video in list_videos :
+        input_video = video
+        input_sound = input_video.replace('video','sound')
+        out_put = input_video.replace('video','export')
+        thisCommande = BaseCommande.replace("++input_video++",input_video).replace("++input_sound++",input_sound.replace(".h264",".wav")).replace("++out_put++",out_put.replace(".h264",".mp4"))
         print("Executing this command : "+thisCommande)
         os.system(thisCommande)
 
@@ -268,7 +248,7 @@ def export_files():
                 print ('Error exportation, no txt file')
 
 def delete_files():
-    list_file= File.get_all_files()
+    list_file= config.get_all_files()
     for element in list_file:
         os.remove(element)
 
@@ -352,7 +332,8 @@ def export_files_end():
 
 def export_files_error():
     print ("Error in export files")
-    return ser3.write(perrorexport+eof)
+    ser3.write(pendexport+eof)
+    ser3.write(perrorexport+eof)
 
 def convert_files_start():
     print ("Begin convert files")
@@ -365,7 +346,8 @@ def convert_files_end():
 
 def convert_files_error():
     print ("Error in convert files")
-    return ser3.write(perrorconvert+eof)
+    ser3.write(pendconvert+eof)
+    ser3.write(perrorconvert+eof)
 
 def distance_screen_ref(distance_ref):
     y = b'"%d"'%distance_ref
@@ -390,7 +372,8 @@ def unit_system(format_serial):
 
 if __name__ == '__main__':
 
-    File = Config("/home/pi/Sensor/")
+    config = Config("/home/pi/Sensor/")
+    #print (config.get_export())
     #Signal of connected device
     acces_menu() # acces a la page 1 / menu
 
@@ -413,7 +396,7 @@ if __name__ == '__main__':
                     ser.open()
                     ser2.open()
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
-                    file_video, file_sound, file_distance, file_gps= File.start(id_cicliste,timestamp)   #path of every file 
+                    file_video, file_sound, file_distance, file_gps= config.start(id_cicliste,timestamp)   #path of every file 
                     with open(file_distance, 'a') as distance_csv: #Prepare de file csv for writing   
                         distance_csv.write("time,distance\n")
                     with open(file_gps, 'a') as gps_csv:
@@ -422,9 +405,9 @@ if __name__ == '__main__':
                     video_record_start() #signal of recording video                               
                     camera_process=Process(target = get_camera, args=(file_video,camera_resolution_width,camera_resolution_height,))
                     camera_process.start()
-                    # sound_record_start() #signal of recording audio 
-                    # microphone_process=Process(target = get_microphone, args=(timestamp,file_sound))
-                    # microphone_process.start()
+                    sound_record_start() #signal of recording audio 
+                    microphone_process=Process(target = get_microphone, args=(timestamp,file_sound))
+                    microphone_process.start()
                     gps_process=Process(target = get_gps_data2, args=(file_gps,))
                     gps_process.start()
 
@@ -447,11 +430,10 @@ if __name__ == '__main__':
                             camera_process.join()
                             gps_process.terminate()
                             gps_process.join()
-                            # subprocess.call(['pkill arecord'],shell=True)
-                            # #os.system()
-                            # print("End recording audio")
-                            # microphone_process.terminate()
-                            # microphone_process.join()
+                            subprocess.call(['pkill arecord'],shell=True)
+                            print("End recording audio")
+                            microphone_process.terminate()
+                            microphone_process.join()
                             start=0
                             ser.close()
                             ser2.close()
@@ -464,11 +446,10 @@ if __name__ == '__main__':
                             camera_process.join()
                             gps_process.terminate()
                             gps_process.join()
-                            # subprocess.call(['pkill arecord'],shell=True)
-                            # #os.system('pkill arecord')
-                            # print("End recording audio - page1")
-                            # microphone_process.terminate()
-                            # microphone_process.join()
+                            subprocess.call(['pkill arecord'],shell=True)
+                            print("End recording audio - page1")
+                            microphone_process.terminate()
+                            microphone_process.join()
                             start=0
                             ser.close()
                             ser2.close()
@@ -519,7 +500,7 @@ if __name__ == '__main__':
             if capture_serial==b'convert': #convert button
                 convert_files_start()
                 try:
-                    export_video ()
+                    convert_video(config)
                     convert_files_end()
                 except:
                     convert_files_error()
