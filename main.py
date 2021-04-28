@@ -44,9 +44,6 @@ cm = 1
 inch=0.393701
 id_cicliste = "ID1_C1"
 
-x=0 ##A regarder
-
-
 #####################
 #Serial Instructions for screen
 #####################
@@ -183,27 +180,23 @@ def get_microphone(timestamp,file_sound):
     print (outputMic)
     os.system(outputMic)
 
-def distance_screen(distance):
-    x = distance
-    y = b'"%d"'%x
-    if x == 0:
+def distance_screen(distance):    
+    y = b'"%d"'%distance
+    if distance == 0:
         ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
-    elif x>0 and x <= 100:
+    elif distance>0 and distance <= 100:
         ser3.write(P4+eof)
         ser3.write(t2+y+eof)
-    elif x > 100 and x<= 260:
+    elif distance > 100 and distance<= 260:
         ser3.write(P42+eof)
         ser3.write(t2+y+eof)
-    elif x == None:
+    elif distance == None:
         Ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
     else:
         ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
-
-
-    #print (y)
 
 def gps_screen(lat):
     if lat == 0:
@@ -212,7 +205,6 @@ def gps_screen(lat):
         ser3.write(gp+eof)
 
 def convert_video(config):
-
     list_export=config.get_export() 
     if len(list_export)>0 :
         for element in list_export:
@@ -248,7 +240,7 @@ def export_files():
     else:
         return (False)
 
-def delete_files():
+def delete_files(config):
     list_file= config.get_all_files()
     for element in list_file:
         os.remove(element)
@@ -543,7 +535,7 @@ if __name__ == '__main__':
             if delete_serial==b'delete': #Delete button
                 delete_files_start()
                 try: 
-                    delete_files()
+                    delete_files(config)
                     delete_files_end()
                 except:
                     pass
