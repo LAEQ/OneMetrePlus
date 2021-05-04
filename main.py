@@ -31,6 +31,8 @@ import fnmatch
 #####################
 from utils.config import Config
 from utils.filemanager import FileManager
+from utils.screen import Screen
+from utils.tools import get_date, get_time
 
 gps_period_capture = 300
 maximum_sensor_distance = 300  #unit in cm
@@ -377,15 +379,17 @@ if __name__ == '__main__':
             print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
             exit(1)
 
-    print(config.get_capture_home())
     file_manager = FileManager(config.get_capture_home())
+
+    screen = Screen()
 
     acces_menu() # acces a la page 1 / menu
 
-    while True: #page 1 /  menu
-        page_counter=ser3.readline()       
-        menu_hour() #Hour
-        menu_date() #Date
+    while True:
+        page_counter = ser3.readline()
+
+        screen.set_date(get_date())
+        screen.set_time(get_time())
 
         while page_counter==b'page2': #page 2 /  record
             

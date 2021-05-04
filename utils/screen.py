@@ -38,6 +38,10 @@ class Screen:
 
         self._dist0 = b'"000"'
 
+        self._page0 = b'page 0'  # page number for the animation LAEQ
+        self._page1 = b'page 1'  # page number for the main menu
+        self._page2 = b'page 2'  # page number for the record page
+
     def read(self):
         return self.serial.readline()
 
