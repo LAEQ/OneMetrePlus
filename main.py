@@ -248,17 +248,6 @@ def delete_files(config):
     for element in list_file:
         os.remove(element)
 
-def menu_hour():
-    hour=dt.datetime.now().strftime('%H:%M:%S')
-    hourstr = '"%s"'%hour
-    hourstrb = bytes(hourstr, 'utf-8')
-    ser3.write(t15+hourstrb+eof)
-
-def menu_date():
-    date=dt.datetime.now().strftime('%Y-%m-%d')
-    datestr = '"%s"'%date
-    datestrb = bytes(datestr, 'utf-8')
-    ser3.write(t16+datestrb+eof)
 
 def menu_record_hour():
     hour=dt.datetime.now().strftime('%H:%M:%S')
@@ -285,19 +274,8 @@ def camera_resolution(capture_serial):
     print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
     return camera_resolution_width,camera_resolution_height
 
-# def acces_menu():
-#     return ser3.write(page1+eof)
-
 def raspberry_connection():
     return ser3.write(RP1+eof)
-
-def clean_screen():
-    ser3.write(P2+eof)
-    ser3.write(RP2+eof)
-    ser3.write(gp2+eof)
-    ser3.write(t2+dist0+eof)
-    ser3.write(P42+eof)
-    ser3.write(Mic2+eof)
 
 def video_record_start():
     print("Begin recording video")
@@ -393,7 +371,7 @@ if __name__ == '__main__':
 
         while page_counter==b'page2': #page 2 /  record
             
-            clean_screen()
+            screen.clear()
             raspberry_connection() #Rpi connected
 
             #Reading input of screen touch nextion (waiting: start)
@@ -468,7 +446,7 @@ if __name__ == '__main__':
                     page_counter=b''
 
             #return to 0
-            clean_screen()
+            screen.clear()
             record=True
             start=b''
 
