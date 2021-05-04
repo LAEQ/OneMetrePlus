@@ -75,3 +75,7 @@ class FileManager:
 
     def get_all_files(self):
         return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance()
+
+    def delete_files(self):
+        for f in self.get_all_files():
+            os.remove(f)

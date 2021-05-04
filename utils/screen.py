@@ -45,6 +45,10 @@ class Screen:
         # page number for the record page
         self._page2 = b'page 2' + self.eof
 
+        # Gif for delete files
+        self._delete = b'va1.val=0'
+        self._finish = b'va1.val=1'
+
     def read(self):
         return self.serial.readline()
 
@@ -74,3 +78,8 @@ class Screen:
         time = bytes(time, 'utf-8')
         self.serial.write(self._t14 + time + self.eof)
 
+    def delete_start(self):
+        self.serial.write(self._delete + self.eof)
+
+    def delete_end(self):
+        self.serial.write(self._finish + self.eof)

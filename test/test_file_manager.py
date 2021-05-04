@@ -5,14 +5,15 @@ import re
 
 from datetime import datetime as dt
 from pathlib import Path
-from config.config import Config
+
+from utils.filemanager import FileManager
 
 
-def create_files(total, config, timestamp):
+def create_files(total, manager, timestamp):
     for i in range(total):
         prefix = "prefix_{}".format(i)
         video_file, sound_file, \
-            distance_file, gps_file = config.start(prefix, timestamp)
+            distance_file, gps_file = manager.start(prefix, timestamp)
 
         Path(video_file).touch()
         Path(sound_file).touch()
@@ -20,9 +21,9 @@ def create_files(total, config, timestamp):
         Path(gps_file).touch()
 
 
-class TestConfig(unittest.TestCase):
+class TestFileManager(unittest.TestCase):
     """
-    Testing configuration with real file system
+    Testing manageruration with real file system
     @todo: mock file system
     """
 
@@ -30,19 +31,19 @@ class TestConfig(unittest.TestCase):
         self.home = tempfile.mkdtemp()
 
     def test_init(self):
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         result = True
-        for directory in config.dir_paths:
+        for directory in manager.dir_paths:
             result = result and os.path.exists(directory)
 
         self.assertTrue(result)
 
     def test_start(self):
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "2021_04_21_13_55_56"
         prefix = "prefix"
         video_file, sound_file, \
-            distance_file, gps_file = config.start(prefix, timestamp)
+            distance_file, gps_file = manager.start(prefix, timestamp)
 
         self.assertEqual(
             video_file,
@@ -66,11 +67,11 @@ class TestConfig(unittest.TestCase):
 
     def test_get_videos(self):
         pattern = re.compile('.+h264$')
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "timestamp"
 
-        create_files(3, config, timestamp)
-        video_files = config.get_videos()
+        create_files(3, manager, timestamp)
+        video_files = manager.get_videos()
 
         self.assertEqual(3, len(video_files))
         self.assertTrue(bool(pattern.match(video_files[0])))
@@ -79,11 +80,11 @@ class TestConfig(unittest.TestCase):
 
     def test_get_sounds(self):
         pattern = re.compile('.+wav$')
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "timestamp"
 
-        create_files(2, config, timestamp)
-        files = config.get_sounds()
+        create_files(2, manager, timestamp)
+        files = manager.get_sounds()
 
         self.assertEqual(2, len(files))
         self.assertTrue(bool(pattern.match(files[0])))
@@ -91,11 +92,11 @@ class TestConfig(unittest.TestCase):
 
     def test_get_gps(self):
         pattern = re.compile('.+csv$')
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "timestamp"
 
-        create_files(4, config, timestamp)
-        files = config.get_gps()
+        create_files(4, manager, timestamp)
+        files = manager.get_gps()
 
         self.assertEqual(4, len(files))
         self.assertTrue(bool(pattern.match(files[0])))
@@ -105,11 +106,11 @@ class TestConfig(unittest.TestCase):
 
     def test_get_distance(self):
         pattern = re.compile('.+csv$')
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "timestamp"
 
-        create_files(8, config, timestamp)
-        files = config.get_distance()
+        create_files(8, manager, timestamp)
+        files = manager.get_distance()
 
         self.assertEqual(8, len(files))
         self.assertTrue(bool(pattern.match(files[0])))
@@ -122,25 +123,33 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(bool(pattern.match(files[7])))
 
     def test_get_all_files(self):
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = "timestamp"
 
-        create_files(64, config, timestamp)
-        files = config.get_all_files()
+        create_files(64, manager, timestamp)
+        files = manager.get_all_files()
         self.assertEqual(64 * 4, len(files))
 
         # @todo assert (8 videos, 8 sounds, ...)
 
     def test_get_export(self):
-        config = Config(home=self.home)
+        manager = FileManager(home=self.home)
         timestamp = dt.now().isoformat()
-        create_files(6, config, timestamp)
+        create_files(6, manager, timestamp)
 
-        exports = config.get_video_sound_tuples()
+        exports = manager.get_video_sound_tuples()
         self.assertEqual(6, len(tuple(exports)))
+        
+    def test_delete_files(self):
+        manager = FileManager(home=self.home)
+        timestamp = dt.now().isoformat()
+        create_files(6, manager, timestamp)
+
+        manager.delete_files()
+        self.assertEqual(0, len(manager.get_all_files()))
 
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(TestConfig)
+    suite = unittest.makeSuite(TestFileManager)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
