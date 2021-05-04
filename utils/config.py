@@ -19,3 +19,9 @@ class Config:
 
     def get_capture_home(self):
         return os.getenv(self.global_vars[1])
+
+    def set_unit(self, value):
+        if value == b'in':
+            self.unit = 0.393701
+        else:
+            self.unit = 1

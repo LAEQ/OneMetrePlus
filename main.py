@@ -256,15 +256,6 @@ def export_files():
         return (False)
 
 
-def delete_files(config):
-    pass
-
-
-#     list_file= config.get_all_files()
-#     for element in list_file:
-#         os.remove(element)
-
-
 def menu_record_hour():
     hour = dt.datetime.now().strftime('%H:%M:%S')
     hourstr = '"%s"' % hour
@@ -306,16 +297,6 @@ def sound_record_start():
     print("Begin recording audio")
     ser3.write(Mic + eof)  # signal of recording audio
 
-
-# def delete_files_start():
-#     return ser3.write(pdelete+eof)
-
-def delete_files_end():
-    return ser3.write(pfinish + eof)
-
-
-# def return_menu():
-#     return ser3.write(page1+eof)
 
 def export_files_start():
     print("Begin export files")
@@ -398,9 +379,8 @@ if __name__ == '__main__':
         screen.set_time(get_time())
 
         while page_counter == b'page2':  # page 2 /  record
-
             screen.clear()
-            raspberry_connection()  # Rpi connected
+            raspberry_connection()
 
             # Reading input of screen touch nextion (waiting: start)
             while start == b'':
@@ -480,20 +460,15 @@ if __name__ == '__main__':
             record = True
             start = b''
 
-        while page_counter == b'page3':  # page 3 /  setup
-            # Reading input of screen touch nextion (waiting: Value)
-            format_serial = ser3.readline()
+        while page_counter == b'page3':
+            # page 3 (setup)
+            format_serial = screen.read()
 
             if format_serial == b'page1':  # In/out page 2
                 page_counter = b''
-
-            if format_serial == b'in' or format_serial == b'cm':
-                try:
-                    unit = unit_system(format_serial)
-                except:
-                    pass
-                finally:
-                    pass
+            elif format_serial == b'in' or format_serial == b'cm':
+                config.set_unit(format_serial)
+                unit = unit_system(format_serial)
 
         while page_counter == b'page4':
             # Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
