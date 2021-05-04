@@ -284,10 +284,6 @@ def camera_resolution(capture_serial):
     return camera_resolution_width, camera_resolution_height
 
 
-def raspberry_connection():
-    return ser3.write(RP1 + eof)
-
-
 def video_record_start():
     print("Begin recording video")
     return ser3.write(P1 + eof)
@@ -380,7 +376,7 @@ if __name__ == '__main__':
 
         while page_counter == b'page2':  # page 2 /  record
             screen.clear()
-            raspberry_connection()
+            screen.show_raspberry()
 
             # Reading input of screen touch nextion (waiting: start)
             while start == b'':
