@@ -5,14 +5,14 @@ import re
 
 from datetime import datetime as dt
 from pathlib import Path
-from config import Config
+from config.config import Config
 
 
 def create_files(total, config, timestamp):
     for i in range(total):
         prefix = "prefix_{}".format(i)
         video_file, sound_file, \
-        distance_file, gps_file = config.start(prefix, timestamp)
+            distance_file, gps_file = config.start(prefix, timestamp)
 
         Path(video_file).touch()
         Path(sound_file).touch()
@@ -25,6 +25,7 @@ class TestConfig(unittest.TestCase):
     Testing configuration with real file system
     @todo: mock file system
     """
+
     def setUp(self) -> None:
         self.home = tempfile.mkdtemp()
 
@@ -41,7 +42,7 @@ class TestConfig(unittest.TestCase):
         timestamp = "2021_04_21_13_55_56"
         prefix = "prefix"
         video_file, sound_file, \
-        distance_file, gps_file = config.start(prefix, timestamp)
+            distance_file, gps_file = config.start(prefix, timestamp)
 
         self.assertEqual(
             video_file,
@@ -137,3 +138,9 @@ class TestConfig(unittest.TestCase):
 
         exports = config.get_video_sound_tuples()
         self.assertEqual(6, len(tuple(exports)))
+
+
+if __name__ == "__main__":
+    suite = unittest.makeSuite(TestConfig)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)

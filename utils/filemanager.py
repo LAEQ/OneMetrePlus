@@ -2,7 +2,10 @@ import os
 import glob
 
 
-class Config:
+class FileManager:
+    """
+    Manager  for capturing, exporting and deleting video, sound, gps and distance files
+    """
     def __init__(self, home="~/Desktop/Capture/files"):
         self.home = home
         self.directories = ["sound", "video", "gps", "distance", "export"]
@@ -14,7 +17,7 @@ class Config:
     def init(self):
         for f in self.dir_paths:
             if os.path.exists(f) is False:
-                os.mkdir(f)
+                os.makedirs(f)
 
     def sound_path(self):
         return self.dir_paths[0]
