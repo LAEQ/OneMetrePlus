@@ -380,8 +380,8 @@ if __name__ == '__main__':
 
             # Reading input of screen touch nextion (waiting: start)
             while start == b'':
-                start = ser3.readline()  # reading serial port from the screen touch
-                menu_record_hour()  # Hour for the menu record
+                start = screen.read()
+                screen.set_time_recording(get_time())
 
                 if start == b'start':  # start process of: camera, gps and distance sensor.
                     ser.open()
