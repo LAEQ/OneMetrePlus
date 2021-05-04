@@ -6,12 +6,12 @@ class FileManager:
     """
     Manager  for capturing, exporting and deleting video, sound, gps and distance files
     """
-    def __init__(self, home="~/Desktop/Capture/files"):
+    def __init__(self, home):
         self.home = home
         self.directories = ["sound", "video", "gps", "distance", "export"]
         self.dir_paths = [os.path.join(self.home, folder) for folder in self.directories]
 
-        # Create app structure
+        # Create capture structure
         self.init()
 
     def init(self):

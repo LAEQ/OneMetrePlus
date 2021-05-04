@@ -25,12 +25,13 @@ import subprocess
 from path import Path
 import fnmatch
 
-from config_test import Config
-
 
 #####################
 #Global variables
 #####################
+from utils.config import Config
+from utils.filemanager import FileManager
+
 gps_period_capture = 300
 maximum_sensor_distance = 300  #unit in cm
 # Camera resolution 
@@ -176,7 +177,7 @@ def get_camera(file_video,camera_resolution_width,camera_resolution_height):
 
 def get_microphone(timestamp,file_sound):
     time.sleep(0.6)
-    outputMic='arecord -D plughw:0 -c1 -r 11025 -f S32_LE -t wav -V mono '+ file_sound
+    outputMic='arecord -D plughw:1 -c1 -r 11025 -f S32_LE -t wav -V mono '+ file_sound
     print (outputMic)
     os.system(outputMic)
 
@@ -192,7 +193,7 @@ def distance_screen(distance):
         ser3.write(P42+eof)
         ser3.write(t2+y+eof)
     elif distance == None:
-        Ser3.write(P42+eof)
+        ser3.write(P42+eof)
         ser3.write(t2+dist0+eof)
     else:
         ser3.write(P42+eof)
@@ -366,13 +367,19 @@ def unit_system(format_serial):
         print ("Metric system", unit)
     return unit
 
-#####################
-#Generer les commandes
-#####################
 
 if __name__ == '__main__':
 
-    config = Config("/home/pi/Sensor/")
+    config = Config()
+
+    for v in config.global_vars:
+        if os.getenv(v) is None:
+            print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
+            exit(1)
+
+    print(config.get_capture_home())
+    file_manager = FileManager(config.get_capture_home())
+
     acces_menu() # acces a la page 1 / menu
 
     while True: #page 1 /  menu
@@ -394,7 +401,7 @@ if __name__ == '__main__':
                     ser.open()
                     ser2.open()
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S') 
-                    file_video, file_sound, file_distance, file_gps= config.start(id_cicliste,timestamp)   #path of every file 
+                    file_video, file_sound, file_distance, file_gps = file_manager.start(id_cicliste,timestamp)   #path of every file
                     with open(file_distance, 'a') as distance_csv: #Prepare de file csv for writing   
                         distance_csv.write("time,distance\n")
                     with open(file_gps, 'a') as gps_csv:
