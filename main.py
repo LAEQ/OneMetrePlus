@@ -285,8 +285,8 @@ def camera_resolution(capture_serial):
     print ("Camera resolution:",camera_resolution_width,camera_resolution_height)
     return camera_resolution_width,camera_resolution_height
 
-def acces_menu():
-    return ser3.write(page1+eof)
+# def acces_menu():
+#     return ser3.write(page1+eof)
 
 def raspberry_connection():
     return ser3.write(RP1+eof)
@@ -315,8 +315,8 @@ def delete_files_end():
     print ("End delete files")
     return ser3.write(pfinish+eof)
 
-def return_menu():
-    return ser3.write(page1+eof)
+# def return_menu():
+#     return ser3.write(page1+eof)
 
 def export_files_start():
     print ("Begin export files")
@@ -380,10 +380,10 @@ if __name__ == '__main__':
             exit(1)
 
     file_manager = FileManager(config.get_capture_home())
-
     screen = Screen()
 
-    acces_menu() # acces a la page 1 / menu
+    # menu (page 1)
+    screen.menu()
 
     while True:
         page_counter = ser3.readline()
@@ -536,8 +536,9 @@ if __name__ == '__main__':
                 finally:
                     pass
 
-        while page_counter==b'page5': #page 5 /  Delete files
-            #Reading input of screen touch nextion (waiting for delete files command)
+        while page_counter==b'page5':
+            # page 5  (delete files)
+            # Reading input of screen touch nextion (waiting for delete files command)
             delete_serial=ser3.readline()
 
             if delete_serial==b'page1': #in/out menu setup
@@ -551,11 +552,11 @@ if __name__ == '__main__':
                 except:
                     pass
                 finally:
-                    pass 
+                    pass
+
                 page_counter=b''
-                delete_serial=b''                
-                return_menu() #return directly over the menu, best for user experience
-                    
+                delete_serial=b''
+                screen.menu()
 
 
 

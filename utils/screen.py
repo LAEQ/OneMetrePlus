@@ -38,12 +38,18 @@ class Screen:
 
         self._dist0 = b'"000"'
 
-        self._page0 = b'page 0'  # page number for the animation LAEQ
-        self._page1 = b'page 1'  # page number for the main menu
-        self._page2 = b'page 2'  # page number for the record page
+        # page number for the animation LAEQ
+        self._page0 = b'page 0' + self.eof
+        # page number for the main menu
+        self._page1 = b'page 1' + self.eof
+        # page number for the record page
+        self._page2 = b'page 2' + self.eof
 
     def read(self):
         return self.serial.readline()
+
+    def menu(self):
+        self.serial.write(self._page1)
 
     def set_time(self, time):
         time = bytes(time, 'utf-8')
