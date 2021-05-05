@@ -6,7 +6,7 @@ class Screen:
         Wrapper to communicate with touch screen connected through usb
         @todo: validate port value
     """
-    def __init__(self, port="/dev/ttyUSB2"):
+    def __init__(self, port=None):
         self.serial = serial.Serial(port=port, baudrate=115200,  # ecran
                                       parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
                                       bytesize=serial.EIGHTBITS, timeout=0.01)
@@ -49,6 +49,11 @@ class Screen:
         self._delete = b'va1.val=0'
         self._finish = b'va1.val=1'
 
+        # Convert files
+        self._convert = b'va1.val=0'
+        self._convert_end = b'va1.val=1'
+        self._convert_error = b'p8.pic=36'
+
     def read(self):
         return self.serial.readline()
 
@@ -83,3 +88,16 @@ class Screen:
 
     def delete_end(self):
         self.serial.write(self._finish + self.eof)
+
+    def convert_start(self):
+        self.serial.write(self._convert + self.eof)
+
+    def convert_end(self):
+        self.serial.write(self._convert_end + self.eof)
+
+    def convert_error(self):
+        self.serial.write(self._convert_error + self.eof)
+
+    def set_distance(self, distance):
+        distance = b'"%d"' % distance
+        self.serial.write(self._t8 + distance + self.eof)

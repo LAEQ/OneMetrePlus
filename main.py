@@ -29,6 +29,7 @@ import fnmatch
 #####################
 from utils.config import Config
 from utils.filemanager import FileManager
+from utils.lidar import Lidar
 from utils.screen import Screen
 from utils.tools import get_date, get_time
 
@@ -185,7 +186,6 @@ def get_camera(file_video, camera_resolution_width, camera_resolution_height):
 def get_microphone(timestamp, file_sound):
     time.sleep(0.6)
     outputMic = 'arecord -D plughw:1 -c1 -r 11025 -f S32_LE -t wav -V mono ' + file_sound
-    print(outputMic)
     os.system(outputMic)
 
 
@@ -363,13 +363,16 @@ if __name__ == '__main__':
             exit(1)
 
     file_manager = FileManager(config.get_capture_home())
-    screen = Screen()
+
+    screen = Screen(port="/dev/ttyUSB2")
+    lidar = Lidar(port="/dev/ttyUSB0")
 
     # menu (page 1)
     screen.menu()
 
     while True:
         page_counter = ser3.readline()
+        page_counter = b'page4'
 
         screen.set_date(get_date())
         screen.set_time(get_time())
@@ -467,53 +470,37 @@ if __name__ == '__main__':
                 unit = unit_system(format_serial)
 
         while page_counter == b'page4':
-            # Reading input of screen touch nextion (waiting for distance ref, camera resolution, convert or export)
-            capture_serial = ser3.readline()
+            # Settings (resolution, distance, ...)
+            capture_serial = screen.read()
             usb_connected()  # identifies the presence of a connected usb
 
-            if capture_serial == b'page1':  # in/out menu setup
+            print(capture_serial)
+
+            if capture_serial == b'page1':
                 page_counter = b''
-
-            if capture_serial == b'capture':  # Reading distance of reference
-                try:
-                    ser.open()
-                    distance_ref = get_tfmini_data_ref(unit)
-                    initial_distance = distance_screen_ref(distance_ref)
-                    ser.close()
-                except:
-                    pass
-                finally:
-                    pass
-
-            if capture_serial == b'convert':  # convert button
-                convert_files_start()
+            elif capture_serial == b'capture':  # Reading distance of reference
+                distance = lidar.set_distance(config)
+                screen.set_distance(distance)
+            elif capture_serial == b'convert':  # convert button
+                screen.convert_start()
                 try:
                     convert_video(config)
-                    convert_files_end()
+                    file_manager.convert()
+                    screen.convert_end()
                 except:
                     convert_files_error()
-                finally:
-                    pass
-                print("End convert files")
-
-            if capture_serial == b'export':  # export button
+            elif capture_serial == b'export':  # export button
                 export_files_start()
                 try:
                     export = export_files()
                     export_files_end(export)
                 except:
                     export_files_error()
-                finally:
-                    pass
-                print("End export files")
-
-            if capture_serial == b'960' or capture_serial == b'720' or capture_serial == b'480':  # Resolution buttons
-                try:
-                    camera_resolution_width, camera_resolution_height = camera_resolution(capture_serial)
-                except:
-                    pass
-                finally:
-                    pass
+            elif config.is_valid_width(capture_serial):
+                print("HERE")
+                time.sleep(5)
+                camera_resolution_width, camera_resolution_height = config.set_resolution(capture_serial)
+                print(camera_resolution_width, camera_resolution_height)
 
         while page_counter == b'page5':
             # page 5  (delete files)
