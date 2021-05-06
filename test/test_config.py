@@ -36,3 +36,9 @@ class TestConfig(unittest.TestCase):
         for value in values:
             with self.subTest(i=value):
                 self.assertTrue(self.config.is_valid_width(value))
+
+
+if __name__ == "__main__":
+    suite = unittest.makeSuite(TestConfig)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)

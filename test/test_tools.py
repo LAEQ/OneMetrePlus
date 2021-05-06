@@ -1,6 +1,6 @@
 import unittest
 
-from utils.tools import unit_system, get_time, get_date, get_timestamp
+from utils.tools import unit_system, get_time, get_date, get_timestamp, get_date_time
 
 
 class TestUnit(unittest.TestCase):
@@ -24,6 +24,8 @@ class TestDateTime(unittest.TestCase):
     def test_get_timestamp(self):
         self.assertRegex(get_timestamp(), "[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}")
 
+    def test_get_date_time(self):
+        self.assertRegex(get_date_time(), "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}")
 
 if __name__ == "__main__":
     suite = unittest.makeSuite(TestUnit)

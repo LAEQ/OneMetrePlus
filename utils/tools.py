@@ -11,6 +11,10 @@ def get_date() -> str:
     return '"{}"'.format(date)
 
 
+def get_date_time() -> str:
+    return dt.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
 def get_timestamp():
     return "{}_{}".format(get_date(), get_time()).replace(":", "_").replace("-", "_").replace('"', '')
 
