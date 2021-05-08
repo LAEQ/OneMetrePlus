@@ -363,26 +363,6 @@ def unit_system(format_serial):
     return unit
 
 
-def page_1(_screen: Screen):
-    print("page 1")
-
-
-def page_2(_screen: Screen):
-    print("page 2")
-
-
-def page3(_screen: Screen):
-    print("page 3")
-
-
-def page_4(_screen: Screen):
-    print("page 4")
-
-
-def page_5(_screen: Screen):
-    print("page 5")
-
-
 if __name__ == '__main__':
 
     config = Config()
@@ -394,11 +374,7 @@ if __name__ == '__main__':
 
     file_manager = FileManager(config.get_capture_home())
     microphone = Microphone()
-    microphone.set_card_number()
     camera = Camera()
-    stream = Stream(microphone)
-    # gps
-
     video_converter = VideoConverter()
 
     screen = Screen(port="/dev/ttyUSB2")
@@ -408,20 +384,10 @@ if __name__ == '__main__':
     screen.menu()
 
     while True:
-        page_counter = screen.read()
+        page_counter = ser3.readline()
+
         screen.set_date(get_date())
         screen.set_time(get_time())
-
-        # if page_counter == b'page2':
-        #     page_2(screen)
-        # elif page_counter == b'page3':
-        #     page3(screen)
-        # elif page_counter == b'page4':
-        #     page_4(screen)
-        # elif page_counter == b'page5':
-        #     page_5(screen)
-        # else:
-
 
         while page_counter == b'page2':  # page 2 /  record
             print("page 2 /  record")
@@ -430,17 +396,34 @@ if __name__ == '__main__':
 
             # Reading input of screen touch nextion (waiting: start)
             while start == b'':
-
+                # print("start")
                 start = screen.read()
                 screen.set_time_recording(get_time())
 
                 if start == b'start':  # start process of: camera, gps and distance sensor.
                     print("Start recording")
-                    # timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+                    # ser.open()
+                    # ser2.open()
+                    timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
                     file_video, file_sound, _, _ = file_manager.start(id_cicliste, get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
-                    # gps + lidar
+
+                    # lidar.start_recording(file_distance)
+
+                    # with open(file_distance, 'a') as distance_csv:
+                    #     distance_csv.write("time,distance\n")
+                    # with open(file_gps, 'a') as gps_csv:
+                    #     gps_csv.write("time,latitude,longitude\n")
+
+                    # video_record_start()  # signal of recording video
+                    # camera_process = Process(target=get_camera, args=(file_video, camera_resolution_width, camera_resolution_height,))
+                    # camera_process.start()
+                    # sound_record_start()
+                    # microphone_process = Process(target=get_microphone, args=(timestamp, file_sound))
+                    # microphone_process.start()
+                    # gps_process = Process(target=get_gps_data2, args=(file_gps,))
+                    # gps_process.start()
 
                     while record is True:
                         stop = ser3.readline()
@@ -458,17 +441,36 @@ if __name__ == '__main__':
                             print("Stop recording")
                             record = False
 
+                            microphone.stop_recording()
+                            camera.stop_recording()
+                            # camera_process.terminate()
+                            # camera_process.join()
+                            # gps_process.terminate()
+                            # gps_process.join()
+                            # subprocess.call(['pkill arecord'], shell=True)
+                            # print("End recording audio")
+                            # microphone_process.terminate()
+                            # microphone_process.join()
+                            # start = 0
+                            # ser.close()
+                            # ser2.close()
                             page_counter = b'page2'
 
                         if stop == b'page1':
                             record = False
-
+                            # print("End recording video - page1")
+                            # camera_process.terminate()
+                            # camera_process.join()
+                            # gps_process.terminate()
+                            # gps_process.join()
+                            # subprocess.call(['pkill arecord'], shell=True)
+                            # print("End recording audio - page1")
+                            # microphone_process.terminate()
+                            # microphone_process.join()
+                            # start = 0
+                            # ser.close()
+                            # ser2.close()
                             page_counter = b''
-
-                    print("Recording Stop")
-                    microphone.stop_recording()
-                    camera.stop_recording()
-                    stream.add_time
 
                 if start == b'page1':  # In/out page1
                     page_counter = b''

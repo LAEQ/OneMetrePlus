@@ -1,4 +1,8 @@
+from random import random
+
 import serial
+import asyncio
+import serial_asyncio
 
 
 class Screen:
@@ -7,9 +11,13 @@ class Screen:
         @todo: validate port value
     """
     def __init__(self, port=None):
-        self.serial = serial.Serial(port=port, baudrate=115200,  # ecran
-                                      parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
-                                      bytesize=serial.EIGHTBITS, timeout=0.01)
+        self.port = port
+        # self.serial = serial.Serial(port=port, baudrate=115200,  # ecran
+        #                               parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
+        #                               bytesize=serial.EIGHTBITS, timeout=0.01)
+
+        self.reader = None
+        self.writer = None
 
         self.eof = b'\xff\xff\xff'
         self._t2 = b't2.txt='  # text object for distance in the record page
@@ -54,11 +62,20 @@ class Screen:
         self._convert_end = b'va1.val=1'
         self._convert_error = b'p8.pic=36'
 
+    async def set_up(self):
+        self.reader, self.writer = await serial_asyncio.open_serial_connection(url=self.port,
+                                                                               baudrate=115200,
+                                                                               parity=serial.PARITY_NONE,
+                                                                               stopbits=serial.STOPBITS_ONE,
+                                                                               bytesize=serial.EIGHTBITS,
+                                                                               timeout=0.01)
+
+
     def read(self):
         return self.serial.readline()
 
     def menu(self):
-        self.serial.write(self._page1)
+        self.writer.write(self._page1)
 
     def set_time(self, time):
         time = bytes(time, 'utf-8')
@@ -101,3 +118,49 @@ class Screen:
     def set_distance(self, distance):
         distance = b'"%d"' % distance
         self.serial.write(self._t8 + distance + self.eof)
+
+
+async def main(loop):
+    screen = Screen('/dev/ttyUSB2')
+
+    await screen.set_up()
+
+    # reader, _ = await serial_asyncio.open_serial_connection(url='/dev/ttyUSB2',
+    #                                                         baudrate=115200,
+    #                                                         parity=serial.PARITY_NONE,
+    #                                                         stopbits=serial.STOPBITS_ONE,
+    #                                                         bytesize=serial.EIGHTBITS,
+    #                                                         timeout=0.01)
+    # print("Reader created")
+
+    received = recv(screen)
+    await asyncio.wait([received])
+
+
+async def send(_writer, msgs):
+    for msg in msgs:
+        _writer.write(msg)
+        print(msg)
+        await asyncio.sleep(2)
+    # # w.write(b'DONE\n')
+    print('Done sending')
+
+
+async def recv(_screen):
+    while True:
+        message = await _screen.reader.read(9)
+        print(message == b'page1')
+        print(message)
+
+        # print("true")
+
+if __name__ == "__main__":
+    # app = Application()
+    # screen = Screen(port="/dev/ttyUSB2")
+    # print("Start Screen")
+    # loop = asyncio.get_event_loop()
+    # loop.run_forever()
+    # print('Done')
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main(loop))
+    loop.close()

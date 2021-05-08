@@ -2,6 +2,7 @@ import subprocess
 import os
 import time
 
+
 class Microphone:
     def __init__(self):
         self.name = "hw:CARD=sndrpii2scard"
@@ -9,7 +10,6 @@ class Microphone:
         self.rate = 11025
         self.format = "wav"
         self.sample_format = ["S16_LE", "S24_LE", "S32_LE"]
-        # a = 'arecord -D plughw:1 -c1 -r 11025 -f S32_LE -t wav -V mono file.wav'
 
         self.set_card_number()
 
@@ -54,10 +54,10 @@ if __name__ == "__main__":
     print("End recording")
     microphone.stop_recording()
 
-    if os.path.exists(file):
-        print("RECORDING {} found".format(file))
-        os.remove(file)
-        print("FILE {} deleted {}".format(file, os.path.exists(file) is False))
-    else:
-        print("NO RECORDING FILE")
+    # if os.path.exists(file):
+    #     print("RECORDING {} found".format(file))
+    #     os.remove(file)
+    #     print("FILE {} deleted {}".format(file, os.path.exists(file) is False))
+    # else:
+    #     print("NO RECORDING FILE")
 

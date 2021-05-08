@@ -23,8 +23,7 @@ def create_files(total, manager, timestamp):
 
 class TestFileManager(unittest.TestCase):
     """
-    Testing manageruration with real file system
-    @todo: mock file system
+    Dependency with file system
     """
 
     def setUp(self) -> None:
