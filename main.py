@@ -129,7 +129,7 @@ if __name__ == '__main__':
             # Settings (resolution, distance, export, convert)
             capture_serial = screen.read()
 
-            usb_connected()
+            # usb_connected()
 
             if capture_serial == b'page1':
                 page_counter = b''
@@ -139,9 +139,12 @@ if __name__ == '__main__':
             elif capture_serial == b'convert':
                 screen.convert_start()
                 try:
+                    converter = VideoConverter(file_manager.get_video_sound_tuples())
+                    converter.convert_videos()
                     screen.convert_end()
-                except:
-                    convert_files_error()
+                except Exception as error:
+                    print(error)
+                    screen.convert_error()
             elif capture_serial == b'export':
                 pass
 

@@ -121,6 +121,7 @@ class Screen:
         self.serial.write(self._convert_end + self.eof)
 
     def convert_error(self):
+        self.serial.write(self._convert_end + self.eof)
         self.serial.write(self._convert_error + self.eof)
 
     def set_distance(self, distance):

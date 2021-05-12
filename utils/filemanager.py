@@ -67,11 +67,13 @@ class FileManager:
     def get_video_sound_tuples(self):
         video_files = self.get_videos()
         sound_files = self.get_sounds()
+        export_files = [file.replace("video", "export").replace("h264", 'mp4') for file in video_files]
 
         video_files.sort()
         sound_files.sort()
+        export_files.sort()
 
-        return zip(video_files, sound_files)
+        return zip(video_files, sound_files, export_files)
 
     def get_all_files(self):
         return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance()
