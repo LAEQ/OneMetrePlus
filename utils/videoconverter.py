@@ -1,6 +1,6 @@
 import os
 import glob
-
+import subprocess
 
 class VideoConverter:
     """Wrapper to communicate with ffmpeg library"""
@@ -10,12 +10,11 @@ class VideoConverter:
 
     def convert_videos(self):
         for f in self.files:
-            print(f[0])
             self.convert(f)
 
     def convert(self, args):
-        command = "ffmpeg -i {} -i {} -c:v copy -c:a aac -shortest {}".format(args[0], args[1], args[2])
-        os.system(command)
+        command = "ffmpeg -y -i {} -i {} -c:v copy -c:a aac -shortest {}".format(args[0], args[1], args[2])
+        return subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
