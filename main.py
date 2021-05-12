@@ -17,6 +17,7 @@ Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
 import os
 
 from utils.camera import Camera
+from utils.export import Exporter
 from utils.gps import GPS
 from utils.microphone import Microphone
 from utils.videoconverter import VideoConverter
@@ -143,10 +144,14 @@ if __name__ == '__main__':
                     converter.convert_videos()
                     screen.convert_end()
                 except Exception as error:
-                    print(error)
                     screen.convert_error()
             elif capture_serial == b'export':
-                pass
+                try:
+                    exporter = Exporter()
+                    exporter.export(file_manager)
+                    screen.export_end()
+                except:
+                    screen.export_error()
 
             elif config.is_valid_width(capture_serial):
                 config.set_resolution(capture_serial)

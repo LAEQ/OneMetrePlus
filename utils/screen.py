@@ -67,6 +67,16 @@ class Screen:
         self._convert_end = b'va1.val=1'
         self._convert_error = b'p8.pic=36'
 
+        # Export
+        self._pexport = b'va3.val=0'
+        self._pendexport = b'va3.val=1'
+        self._perrorexport = b'p9.pic=36'
+
+        # convert
+        self._finishconvert = b'p8.pic=26'
+        self._finishexport = b'p9.pic=26'
+        self._usbplug = b'p9.pic=31'
+
     async def set_up(self):
         self.reader, self.writer = await serial_asyncio.open_serial_connection(url=self.port,
                                                                                baudrate=115200,
@@ -127,6 +137,14 @@ class Screen:
     def set_distance(self, distance):
         distance = b'"%d"' % distance
         self.serial.write(self._t8 + distance + self.eof)
+
+    def export_end(self):
+        self.serial.write(self._pendexport + self.eof)
+        self.serial.write(self._inishexport + self.eof)
+
+    def export_error(self):
+        self.serial.write(self._pendexport + self.eof)
+        self.serial.write(self._inishexport + self.eof)
 
 
 async def main(loop):
