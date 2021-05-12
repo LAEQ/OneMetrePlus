@@ -396,7 +396,6 @@ if __name__ == '__main__':
     microphone = Microphone()
     microphone.set_card_number()
     camera = Camera()
-    stream = Stream(microphone)
     # gps
 
     video_converter = VideoConverter()

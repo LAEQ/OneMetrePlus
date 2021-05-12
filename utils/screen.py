@@ -1,8 +1,12 @@
+from multiprocessing.context import Process
 from random import random
 
 import serial
 import asyncio
 import serial_asyncio
+import time
+
+from utils.tools import get_time, get_date
 
 
 class Screen:
@@ -12,9 +16,9 @@ class Screen:
     """
     def __init__(self, port=None):
         self.port = port
-        # self.serial = serial.Serial(port=port, baudrate=115200,  # ecran
-        #                               parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
-        #                               bytesize=serial.EIGHTBITS, timeout=0.01)
+        self.serial = serial.Serial(port=port, baudrate=115200,  # ecran
+                                      parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
+                                      bytesize=serial.EIGHTBITS, timeout=0.01)
 
         self.reader = None
         self.writer = None
@@ -70,7 +74,6 @@ class Screen:
                                                                                bytesize=serial.EIGHTBITS,
                                                                                timeout=0.01)
 
-
     def read(self):
         return self.serial.readline()
 
@@ -79,7 +82,7 @@ class Screen:
 
     def set_time(self, time):
         time = bytes(time, 'utf-8')
-        self.serial.write(self._time + time + self.eof)
+        self.writer.write(self._time + time + self.eof)
 
     def set_date(self, date):
         date = bytes(date, 'utf-8')
@@ -125,23 +128,15 @@ async def main(loop):
 
     await screen.set_up()
 
-    # reader, _ = await serial_asyncio.open_serial_connection(url='/dev/ttyUSB2',
-    #                                                         baudrate=115200,
-    #                                                         parity=serial.PARITY_NONE,
-    #                                                         stopbits=serial.STOPBITS_ONE,
-    #                                                         bytesize=serial.EIGHTBITS,
-    #                                                         timeout=0.01)
-    # print("Reader created")
-
+    sent = send(screen, [])
     received = recv(screen)
-    await asyncio.wait([received])
+    await asyncio.wait([sent, received])
 
 
-async def send(_writer, msgs):
-    for msg in msgs:
-        _writer.write(msg)
-        print(msg)
-        await asyncio.sleep(2)
+async def send(_screen, msgs):
+    while True:
+        _screen.set_time(get_time())
+        await asyncio.sleep(1)
     # # w.write(b'DONE\n')
     print('Done sending')
 
@@ -149,18 +144,10 @@ async def send(_writer, msgs):
 async def recv(_screen):
     while True:
         message = await _screen.reader.read(9)
-        print(message == b'page1')
         print(message)
 
-        # print("true")
 
 if __name__ == "__main__":
-    # app = Application()
-    # screen = Screen(port="/dev/ttyUSB2")
-    # print("Start Screen")
-    # loop = asyncio.get_event_loop()
-    # loop.run_forever()
-    # print('Done')
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main(loop))
     loop.close()

@@ -422,7 +422,7 @@ if __name__ == '__main__':
                     # sound_record_start()
                     # microphone_process = Process(target=get_microphone, args=(timestamp, file_sound))
                     # microphone_process.start()
-                    # gps_process = Process(target=get_gps_data2, args=(file_gps,))
+                    gps_process = Process(target=get_gps_data2, args=(file_gps,))
                     # gps_process.start()
 
                     while record is True:
