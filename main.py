@@ -15,7 +15,6 @@ Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
 """
 
 import os
-
 from utils.camera import Camera
 from utils.export import Exporter
 from utils.gps import GPS
@@ -25,33 +24,21 @@ from utils.config import Config
 from utils.filemanager import FileManager
 from utils.lidar import Lidar
 from utils.screen import Screen
-from utils.tools import get_date, get_time, get_date_time, get_date_time_stringify
-
-start = b''
-record = True
-initial_distance = 0  # initial distance
-id_cicliste = "ID1_C1"
-
-
-# def usb_connected():
-#     subdirectory = "/media/pi/"
-#     # Icon ok for usb connected
-#     for root, dirs, files in os.walk(subdirectory):
-#         for name in files:
-#             if fnmatch.fnmatch(name, '*.txt'):
-#                 if name == 'LAEQ.txt':
-#                     ser3.write(Usbplug + eof)
+from utils.tools import get_date, get_time, get_date_time_stringify
 
 
 if __name__ == '__main__':
+    start = b''
+    record = True
+    initial_distance = 0
+    id_cicliste = "ID1_C1"
+
     config = Config()
 
     for v in config.global_vars:
         if os.getenv(v) is None:
             print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
             exit(1)
-
-    # video_converter = VideoConverter()
 
     file_manager = FileManager(config.get_capture_home())
     microphone = Microphone()
@@ -71,7 +58,6 @@ if __name__ == '__main__':
         page_counter == b'page2'
 
         while page_counter == b'page2':  # page 2 /  record
-            print("page 2 /  record")
             screen.clear()
             screen.show_raspberry()
             screen.start_recording()
@@ -97,7 +83,6 @@ if __name__ == '__main__':
                         # @todo display distance to screen
 
                         if stop == b'stop':
-                            print("Stop recording")
                             record = False
                             page_counter = b'page2'
 
@@ -143,7 +128,7 @@ if __name__ == '__main__':
                     converter = VideoConverter(file_manager.get_video_sound_tuples())
                     converter.convert_videos()
                     screen.convert_end()
-                except Exception as error:
+                except:
                     screen.convert_error()
             elif capture_serial == b'export':
                 try:
