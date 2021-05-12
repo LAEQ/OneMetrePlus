@@ -4,7 +4,6 @@ import os
 class Config:
     def __init__(self):
         self.global_vars = ["PROJECT_HOME", "CAPTURE_HOME"]
-        # self.resolutions = [[480, 270], [720, 405], [960, 540]]
         self.resolutions = [[800, 600], [600, 450], [400, 300]]
 
         self.gps_period_capture = 300

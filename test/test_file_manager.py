@@ -13,7 +13,7 @@ def create_files(total, manager, timestamp):
     for i in range(total):
         prefix = "prefix_{}".format(i)
         video_file, sound_file, \
-            distance_file, gps_file = manager.start(prefix, timestamp)
+            distance_file, gps_file = manager.start_recording(prefix, timestamp)
 
         Path(video_file).touch()
         Path(sound_file).touch()

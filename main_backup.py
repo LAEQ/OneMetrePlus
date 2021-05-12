@@ -416,8 +416,8 @@ if __name__ == '__main__':
                     # with open(file_gps, 'a') as gps_csv:
                     #     gps_csv.write("time,latitude,longitude\n")
 
-                    # video_record_start()  # signal of recording video
-                    # camera_process = Process(target=get_camera, args=(file_video, camera_resolution_width, camera_resolution_height,))
+                    video_record_start()  # signal of recording video
+                    camera_process = Process(target=get_camera, args=(file_video, camera_resolution_width, camera_resolution_height,))
                     # camera_process.start()
                     # sound_record_start()
                     # microphone_process = Process(target=get_microphone, args=(timestamp, file_sound))

@@ -30,20 +30,21 @@ class Screen:
         self._time = b't15.txt='
         self._date = b't0.txt='
 
-        # Image for recording: red / black circle
+        # Video : red / black circle
         self._P1 = b'p1.pic=0'
         self._P2 = b'p1.pic=2'
 
-        # raspberry connection / black square
+        # Raspberry icon / black square
         self._RP1 = b'p3.pic=6'
         self._RP2 = b'p3.pic=2'
 
-        # GPS in the record page / black square
-        self._gp = b'p2.pic=1'  # image for GPS in the record page (target)
-        self._gp2 = b'p2.pic=2'  # image standard for indicator (black square)
+        # GPS icon / black square
+        self._gp = b'p2.pic=1'
+        self._gp2 = b'p2.pic=2'
 
-        self._Mic = b'p12.pic=32'  # image for microphone in the record page (mic icon)
-        self._Mic2 = b'p12.pic=2'  # image standard for indicator (black square)
+        # Microphone red / black
+        self._Mic = b'p12.pic=32'
+        self._Mic2 = b'p12.pic=2'
 
         self._P4 = b'p4.pic=7'  # image for distance < 100 cm  in the record page (Warning sign)
         self._P42 = b'p4.pic=8'  # image standard for indicator (black square)
@@ -78,11 +79,15 @@ class Screen:
         return self.serial.readline()
 
     def menu(self):
-        self.writer.write(self._page1)
+        self.serial.write(self._page1)
+
+    def start_recording(self):
+        self.serial.write(b'p1.pic=0' + b'\xff\xff\xff')
+        # self.serial.write(b'p12.pic=32' + b'\xff\xff\xff')
 
     def set_time(self, time):
         time = bytes(time, 'utf-8')
-        self.writer.write(self._time + time + self.eof)
+        self.serial.write(self._time + time + self.eof)
 
     def set_date(self, date):
         date = bytes(date, 'utf-8')
