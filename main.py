@@ -1,5 +1,5 @@
 """
-Raspberry project to record distances with vehicules during a bike ride
+Raspberry project to record distances with vehicles passing by during a bike ride
 
 Conception and hardware: Andres Henao <email@toprovide>
 Programming:
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     microphone.set_card_number()
     camera = Camera()
     screen = Screen(port="/dev/ttyUSB2")
-    lidar = Lidar(port="/dev/ttyUSB0", config=config)
+    lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
     gps = GPS("/dev/ttyUSB1", 9600)
 
     screen.menu()
@@ -57,7 +57,8 @@ if __name__ == '__main__':
 
         page_counter == b'page2'
 
-        while page_counter == b'page2':  # page 2 /  record
+        # page 2 /  record
+        while page_counter == b'page2':
             screen.clear()
             screen.show_raspberry()
             screen.start_recording()
@@ -115,7 +116,13 @@ if __name__ == '__main__':
             # Settings (resolution, distance, export, convert)
             capture_serial = screen.read()
 
-            # usb_connected()
+            exporter = None
+
+            try:
+                exporter = Exporter()
+                screen.set_usb_plug()
+            except:
+                pass
 
             if capture_serial == b'page1':
                 page_counter = b''
@@ -132,7 +139,6 @@ if __name__ == '__main__':
                     screen.convert_error()
             elif capture_serial == b'export':
                 try:
-                    exporter = Exporter()
                     exporter.export(file_manager)
                     screen.export_end()
                 except:

@@ -15,6 +15,9 @@ class Config:
         self.max_sensor_distance = 300
         self.distance = 0
 
+    def get_max_distance(self):
+        return self.max_sensor_distance * self.unit
+
     def is_valid_width(self, value):
         return value in self.get_camera_widths()
 
@@ -46,10 +49,13 @@ class Config:
             return self.get_resolution()
 
     def set_unit(self, value):
+        print(value)
         if value == b'in':
             self.unit = 0.393701
         else:
             self.unit = 1
+
+        print(self.unit)
 
     def get_resolution(self):
         return self.resolution[0], self.resolution[1]

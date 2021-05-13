@@ -5,6 +5,7 @@ import serial
 import asyncio
 import serial_asyncio
 import time
+import random
 
 from utils.tools import get_time, get_date
 
@@ -144,34 +145,65 @@ class Screen:
 
     def export_error(self):
         self.serial.write(self._pendexport + self.eof)
-        self.serial.write(self._inishexport + self.eof)
+        self.serial.write(self._finishexport + self.eof)
 
+    def set_no_icon(self, distance):
+        self.serial.write(self._P42 + self.eof)
+        self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
 
-async def main(loop):
-    screen = Screen('/dev/ttyUSB2')
+    def set_warning(self, distance):
+        self.serial.write(self._P4 + self.eof)
+        self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
 
-    await screen.set_up()
+    def set_usb_plug(self):
+        self.serial.write(self._usbplug + self.eof)
 
-    sent = send(screen, [])
-    received = recv(screen)
-    await asyncio.wait([sent, received])
-
-
-async def send(_screen, msgs):
-    while True:
-        _screen.set_time(get_time())
-        await asyncio.sleep(1)
-    # # w.write(b'DONE\n')
-    print('Done sending')
-
-
-async def recv(_screen):
-    while True:
-        message = await _screen.reader.read(9)
-        print(message)
+    def write(self, message):
+        self.serial.write(message)
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(loop))
-    loop.close()
+    screen = Screen(port="/dev/ttyUSB2")
+
+    while True:
+        screen.set_time_recording(get_time())
+        screen.set_warning()
+
+        v = random.randint(1,5)
+
+        if v % 2 == 0:
+            screen.set_warning()
+            screen.write(b'p4.pic=8\xff\xff\xff')
+        else:
+            screen.set_no_icon()
+
+        time.sleep(1)
+
+# async def main(loop):
+#     screen = Screen('/dev/ttyUSB2')
+#
+#     await screen.set_up()
+#
+#     sent = send(screen, [])
+#     received = recv(screen)
+#     await asyncio.wait([sent, received])
+#
+#
+# async def send(_screen, msgs):
+#     while True:
+#         _screen.set_time(get_time())
+#         await asyncio.sleep(1)
+#     # # w.write(b'DONE\n')
+#     print('Done sending')
+#
+#
+# async def recv(_screen):
+#     while True:
+#         message = await _screen.reader.read(9)
+#         print(message)
+#
+#
+# if __name__ == "__main__":
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(main(loop))
+#     loop.close()

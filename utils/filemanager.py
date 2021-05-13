@@ -64,6 +64,9 @@ class FileManager:
     def get_distance(self):
         return glob.glob(os.path.join(self.distance_path(), "*"))
 
+    def get_export(self):
+        return glob.glob(os.path.join(self.export_path(), "*"))
+
     def get_video_sound_tuples(self):
         video_files = self.get_videos()
         sound_files = self.get_sounds()
@@ -76,7 +79,7 @@ class FileManager:
         return zip(video_files, sound_files, export_files)
 
     def get_all_files(self):
-        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance()
+        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance() + self.get_export()
 
     def delete_files(self):
         for f in self.get_all_files():
