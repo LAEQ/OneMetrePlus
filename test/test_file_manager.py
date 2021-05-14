@@ -42,7 +42,7 @@ class TestFileManager(unittest.TestCase):
         timestamp = "2021_04_21_13_55_56"
         prefix = "prefix"
         video_file, sound_file, \
-            distance_file, gps_file = manager.start(prefix, timestamp)
+            distance_file, gps_file = manager.start_recording(prefix, timestamp)
 
         self.assertEqual(
             video_file,

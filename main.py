@@ -1,8 +1,14 @@
 """
-Raspberry project to record distances with vehicles passing by during a bike ride
+Raspberry project to record traffic with vehicles passing by during a bike ride.
 
-Conception and hardware: Andres Henao <email@toprovide>
-Programming:
+Hardware:
+    - RPi Camera (G), Fisheye Lens Angle of View (diagonal) : 160 degree,5 megapixel OV5647 sensor
+    - I2S Output Digital Microphone, High SNR of 65dB(A)
+    - Beitian BN-880 GPS, Level Positioning Precision: 2m At Open, Wind, Output Frequency:1Hz-10Hz,Default 1Hz
+    - TFMini Plus - Micro LiDAR Module, Operating Range - 0.1m~12m, Distance resolution - 5mm, Frame rate - 1-1000Hz(adjustable)
+
+Hardware: Andres Henao <email@toprovide>
+Software:
     - Andres Henao <email@toprovide>
     - David Maignan <davidmaignan@gmail.com>
 
@@ -70,7 +76,7 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, file_distance, file_gps = file_manager.start(id_cicliste, get_date_time_stringify())
+                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cicliste, get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
@@ -80,8 +86,6 @@ if __name__ == '__main__':
                     while record is True:
                         stop = screen.read()
                         screen.set_time_recording(get_time())
-
-                        # @todo display distance to screen
 
                         if stop == b'stop':
                             record = False
@@ -95,11 +99,11 @@ if __name__ == '__main__':
                     camera.stop_recording()
                     lidar.stop_recording()
                     gps.stop_recording()
+                    screen.clear()
 
                 if start == b'page1':  # In/out page1
                     page_counter = b''
 
-            screen.clear()
             record = True
             start = b''
 
@@ -115,7 +119,6 @@ if __name__ == '__main__':
         while page_counter == b'page4':
             # Settings (resolution, distance, export, convert)
             capture_serial = screen.read()
-
             exporter = None
 
             try:

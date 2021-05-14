@@ -19,7 +19,7 @@ class Application:
         self.lidar = _lidar
 
     def star_recording(self):
-        file_video, file_sound, _, _ = self.file_manager.start(self.id_cyclist, get_date_time_stringify())
+        file_video, file_sound, _, _ = self.file_manager.start_recording(self.id_cyclist, get_date_time_stringify())
         print(file_video)
         self.camera.start_recording(file_video)
         self.microphone.start_recording(file_sound)
@@ -38,7 +38,7 @@ class Application:
             print("Implement export")
         elif message == b'capture':
             distance = lidar.set_distance(self.config.unit)
-            self.config.set_distance(distance)
+            self.config.set_distance_edge(distance)
 
 
 if __name__ == "__main__":

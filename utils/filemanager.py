@@ -46,7 +46,7 @@ class FileManager:
     def new_sound(self, prefix, timestamp):
         return os.path.join(self.sound_path(), "{}_{}.wav".format(prefix, timestamp))
 
-    def start(self, prefix, timestamp):
+    def start_recording(self, prefix, timestamp):
         return self.new_video(prefix, timestamp), \
                self.new_sound(prefix, timestamp), \
                self.new_distance(prefix, timestamp), \

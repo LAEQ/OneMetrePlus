@@ -37,6 +37,15 @@ class TestConfig(unittest.TestCase):
             with self.subTest(i=value):
                 self.assertTrue(self.config.is_valid_width(value))
 
+    def test_get_max_distance_cm(self):
+        result = self.config.get_max_distance()
+        self.assertEqual(300, result)
+
+    def test_get_max_distance_in(self):
+        self.config.set_unit(b'in')
+        result = self.config.get_max_distance()
+        self.assertAlmostEqual(118.1103000000000, result)
+
 
 if __name__ == "__main__":
     suite = unittest.makeSuite(TestConfig)

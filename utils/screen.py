@@ -105,15 +105,42 @@ class Screen:
         self.serial.write(self._date + date + self.eof)
 
     def clear(self):
-        self.serial.write(self._P2 + self.eof)
-        self.serial.write(self._RP2 + self.eof)
-        self.serial.write(self._gp2 + self.eof)
-        self.serial.write(self._t2 + self._dist0 + self.eof)
-        self.serial.write(self._P42 + self.eof)
-        self.serial.write(self._Mic2 + self.eof)
+        self.hide_recording()
+        self.hide_raspberry()
+        self.hide_gps()
+        self.show_distance_null()
+        self.hide_warning()
+        self.hide_microphone()
 
     def show_raspberry(self):
         self.serial.write(self._RP1 + self.eof)
+
+    def hide_raspberry(self):
+        self.serial.write(self._RP2 + self.eof)
+
+    def show_microphone(self):
+        self.serial.write(self._Mic + self.eof)
+
+    def hide_microphone(self):
+        self.serial.write(self._Mic2 + self.eof)
+
+    def show_gps(self):
+        self.serial.write(self._gp + self.eof)
+
+    def hide_gps(self):
+        self.serial.write(self._gp2 + self.eof)
+
+    def show_recording(self):
+        self.serial.write(self._P1 + self.eof)
+
+    def hide_recording(self):
+        self.serial.write(self._P2 + self.eof)
+
+    def show_warning(self):
+        self.serial.write(self._P4 + self.eof)
+
+    def hide_warning(self):
+        self.serial.write(self._P42 + self.eof)
 
     def set_time_recording(self, time):
         time = bytes(time, 'utf-8')
@@ -152,8 +179,8 @@ class Screen:
         self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
 
     def set_warning(self, distance):
-        self.serial.write(self._P4 + self.eof)
-        self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
+        self.show_warning()
+        self.show_distance(distance)
 
     def set_usb_plug(self):
         self.serial.write(self._usbplug + self.eof)
@@ -161,23 +188,27 @@ class Screen:
     def write(self, message):
         self.serial.write(message)
 
+    def show_distance(self, distance):
+        self.hide_warning()
+        self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
+
+    def show_warning_distance(self, distance):
+        self.show_warning()
+        self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
+
+    def show_distance_null(self):
+        self.hide_warning()
+        self.serial.write(self._t2 + (b'"%d"' % self._dist0) + self.eof)
+
 
 if __name__ == "__main__":
     screen = Screen(port="/dev/ttyUSB2")
 
-    while True:
-        screen.set_time_recording(get_time())
-        screen.set_warning()
+    screen.show_raspberry()
+    screen.show_recording()
+    screen.show_gps()
 
-        v = random.randint(1,5)
 
-        if v % 2 == 0:
-            screen.set_warning()
-            screen.write(b'p4.pic=8\xff\xff\xff')
-        else:
-            screen.set_no_icon()
-
-        time.sleep(1)
 
 # async def main(loop):
 #     screen = Screen('/dev/ttyUSB2')

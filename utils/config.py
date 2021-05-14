@@ -11,9 +11,11 @@ class Config:
         self.unit = 1
 
         self.set_resolution(None)
+        self.warning_distance = 100
+        self.max_distance = 260
 
         self.max_sensor_distance = 300
-        self.distance = 0
+        self.distance_edge = 0
 
     def get_max_distance(self):
         return self.max_sensor_distance * self.unit
@@ -60,5 +62,5 @@ class Config:
     def get_resolution(self):
         return self.resolution[0], self.resolution[1]
 
-    def set_distance(self, distance):
-        self.distance = distance
+    def set_distance_edge(self, distance):
+        self.distance_edge = distance

@@ -6,7 +6,6 @@ Raspberry project for recording traffic during a bike ride.
 ## Configuration
 Some global environments are required to run the project. Please add the following variables to your environement.
 
-
 ```bash
 # ~/.bashrc
 export PROJECT_HOME=/home/pi/path/to/clone/project

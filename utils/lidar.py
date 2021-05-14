@@ -43,10 +43,9 @@ class Lidar:
     def record(self, file_path: str) -> None:
         with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser, open(file_path, "w") as _file:
             unit = self.config.unit
-            initial_distance = self.config.distance
+            initial_distance = self.config.distance_edge
             max_distance = self.config.get_max_distance()
-
-            print(self.screen)
+            warning_distance = self.config.warning_distance
 
             while True:
                 recv = ser.read(9)
@@ -58,14 +57,12 @@ class Lidar:
                         _file.write("{},{}\n".format(time.time(), d))
                         _file.flush()
 
-                    if 0 < d <= 100:
-                        self.screen.set_warning(d)
-                    elif 100 < d <= 260:
-                        self.screen.set_no_icon(d)
+                        if d < warning_distance:
+                            self.screen.show_warning_distance(d)
+                        else:
+                            self.screen.show_distance(d)
                     else:
-                        pass
-                        # self.screen.set_di
-                        # ser3.write(t2 + dist0 + eof)
+                        self.screen.show_distance_null()
 
     def start_recording(self, file_path: str) -> None:
         self.process = Process(target=self.record, args=(file_path, ))

@@ -402,38 +402,38 @@ if __name__ == '__main__':
 
                 if start == b'start':  # start process of: camera, gps and distance sensor.
                     print("Start recording")
-                    # ser.open()
-                    # ser2.open()
+                    ser.open()
+                    ser2.open()
                     timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-                    file_video, file_sound, _, _ = file_manager.start(id_cicliste, get_date_time_stringify())
+                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cicliste, get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
 
-                    # lidar.start_recording(file_distance)
+                    lidar.start_recording(file_distance)
 
-                    # with open(file_distance, 'a') as distance_csv:
-                    #     distance_csv.write("time,distance\n")
-                    # with open(file_gps, 'a') as gps_csv:
-                    #     gps_csv.write("time,latitude,longitude\n")
+                    with open(file_distance, 'a') as distance_csv:
+                        distance_csv.write("time,distance\n")
+                    with open(file_gps, 'a') as gps_csv:
+                        gps_csv.write("time,latitude,longitude\n")
 
                     video_record_start()  # signal of recording video
                     camera_process = Process(target=get_camera, args=(file_video, camera_resolution_width, camera_resolution_height,))
-                    # camera_process.start()
-                    # sound_record_start()
-                    # microphone_process = Process(target=get_microphone, args=(timestamp, file_sound))
-                    # microphone_process.start()
+                    camera_process.start()
+                    sound_record_start()
+                    microphone_process = Process(target=get_microphone, args=(timestamp, file_sound))
+                    microphone_process.start()
                     gps_process = Process(target=get_gps_data2, args=(file_gps,))
-                    # gps_process.start()
+                    gps_process.start()
 
                     while record is True:
                         stop = ser3.readline()
                         # menu_record_hour()
-                        # hour = dt.datetime.now().strftime('%H:%M:%S.%f')
+                        hour = dt.datetime.now().strftime('%H:%M:%S.%f')
                         #
-                        # distance = get_tfmini_data(unit, initial_distance)
-                        # distance_screen(distance)
-                        # if distance > 0 and distance <= maximum_sensor_distance * unit:
-                        #     # print(hour,distance)
+                        distance = get_tfmini_data(unit, initial_distance)
+                        distance_screen(distance)
+                        if distance > 0 and distance <= maximum_sensor_distance * unit:
+                            print(hour,distance)
                         #     with open(file_distance, 'a') as distance_csv:
                         #         distance_csv.write(hour + ',' + str(distance) + '\n')
 
