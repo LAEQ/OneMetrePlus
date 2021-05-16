@@ -129,8 +129,6 @@ class TestFileManager(unittest.TestCase):
         files = manager.get_all_files()
         self.assertEqual(64 * 4, len(files))
 
-        # @todo assert (8 videos, 8 sounds, ...)
-
     def test_get_export(self):
         manager = FileManager(home=self.home)
         timestamp = dt.now().isoformat()

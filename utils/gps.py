@@ -4,11 +4,14 @@ import pynmea2
 import serial
 from multiprocessing.context import Process
 
+from utils.screen import Screen
+
 
 class GPS:
-    def __init__(self, port, baudrate):
+    def __init__(self, port, baudrate, _screen: Screen):
         self.port = port
         self.baudrate = baudrate
+        self.screen = _screen
         self.process = None
         self.serial = serial.Serial()
         self.serial.baudrate = self.baudrate
@@ -25,6 +28,11 @@ class GPS:
                         value = "{},{},{}\n".format(time.time(), position.latitude, position.longitude)
                         _file.write(value)
                         _file.flush()
+
+                        if position.latitude == 0:
+                            self.screen.hide_gps()
+                        else:
+                            self.screen.show_gps()
                     except:
                         pass
 

@@ -162,9 +162,8 @@ class Screen:
         self.serial.write(self._convert_end + self.eof)
         self.serial.write(self._convert_error + self.eof)
 
-    def set_distance(self, distance):
-        distance = b'"%d"' % distance
-        self.serial.write(self._t8 + distance + self.eof)
+    def export_start(self):
+        self.serial.write(self._pexport + self.eof)
 
     def export_end(self):
         self.serial.write(self._pendexport + self.eof)
@@ -172,7 +171,7 @@ class Screen:
 
     def export_error(self):
         self.serial.write(self._pendexport + self.eof)
-        self.serial.write(self._finishexport + self.eof)
+        self.serial.write(self._perrorexport + self.eof)
 
     def set_no_icon(self, distance):
         self.serial.write(self._P42 + self.eof)
@@ -188,6 +187,10 @@ class Screen:
     def write(self, message):
         self.serial.write(message)
 
+    def set_distance(self, distance):
+        distance = b'"%d"' % distance
+        self.serial.write(self._t8 + distance + self.eof)
+
     def show_distance(self, distance):
         self.hide_warning()
         self.serial.write(self._t2 + (b'"%d"' % distance) + self.eof)
@@ -198,15 +201,14 @@ class Screen:
 
     def show_distance_null(self):
         self.hide_warning()
-        self.serial.write(self._t2 + (b'"%d"' % self._dist0) + self.eof)
+        self.serial.write(self._t2 + self._dist0 + self.eof)
 
 
 if __name__ == "__main__":
     screen = Screen(port="/dev/ttyUSB2")
 
-    screen.show_raspberry()
-    screen.show_recording()
-    screen.show_gps()
+    screen.export_error()
+
 
 
 

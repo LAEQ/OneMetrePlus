@@ -19,7 +19,6 @@ Source code: url to provide
 Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
 
 """
-
 import os
 from utils.camera import Camera
 from utils.export import Exporter
@@ -42,7 +41,7 @@ if __name__ == '__main__':
     config = Config()
 
     for v in config.global_vars:
-        if os.getenv(v) is None:
+        if os.path.exists(v) is False:
             print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
             exit(1)
 
@@ -52,7 +51,7 @@ if __name__ == '__main__':
     camera = Camera()
     screen = Screen(port="/dev/ttyUSB2")
     lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
-    gps = GPS("/dev/ttyUSB1", 9600)
+    gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
 
     screen.menu()
 
@@ -67,7 +66,6 @@ if __name__ == '__main__':
         while page_counter == b'page2':
             screen.clear()
             screen.show_raspberry()
-            screen.start_recording()
 
             # Reading input of screen touch nextion (waiting: start)
             while start == b'':
@@ -76,12 +74,14 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cicliste, get_date_time_stringify())
+                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cicliste,
+                                                                                                   get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
-                    screen.start_recording()
+                    screen.show_recording()
+                    # screen.show_microphone()
 
                     while record is True:
                         stop = screen.read()
@@ -153,15 +153,17 @@ if __name__ == '__main__':
         while page_counter == b'page5':
             # page 5  (delete files)
             delete_serial = screen.read()
-
             if delete_serial == b'page1':
                 page_counter = b''
             elif delete_serial == b'delete':
                 screen.delete_start()
                 try:
+                    print("icit")
                     file_manager.delete_files()
                     screen.delete_end()
                     page_counter = b''
                     screen.menu()
+                except Exception as error:
+                    print(error)
                 finally:
                     delete_serial = b''
