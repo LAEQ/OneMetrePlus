@@ -203,6 +203,12 @@ class Screen:
         self.hide_warning()
         self.serial.write(self._t2 + self._dist0 + self.eof)
 
+    def show_recording_2(self):
+        self.writer.write(self._P1 + self.eof)
+
+    def hide_recording_2(self):
+        self.writer.write(self._P2 + self.eof)
+
 
 if __name__ == "__main__":
     screen = Screen(port="/dev/ttyUSB2")

@@ -50,7 +50,7 @@ if __name__ == "__main__":
     file = "test.wav"
     print("Start recording")
     microphone.start_recording("test.wav")
-    time.sleep(5)
+    time.sleep()
     print("End recording")
     microphone.stop_recording()
 

@@ -46,7 +46,8 @@ class GPS:
 
 
 if __name__ == "__main__":
-    gps = GPS("/dev/ttyUSB1", 9600)
+    screen = Screen(port="/dev/ttyUSB2")
+    gps = GPS("/dev/ttyUSB1", 9600, screen)
 
     print("GPS: start")
     file = "gps_test.csv"
@@ -55,6 +56,10 @@ if __name__ == "__main__":
     gps.stop_recording()
     print("End")
     time.sleep(3)
+
+    with open(file, "r") as f:
+        print(f.readline())
+
 
 
     print("GPS: stop")
