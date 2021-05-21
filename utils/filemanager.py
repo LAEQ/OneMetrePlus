@@ -82,8 +82,6 @@ class FileManager:
         return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance() + self.get_export()
 
     def delete_files(self):
-        print(self.video_path())
-        print(len(self.get_all_files()))
         for f in self.get_all_files():
             print(f)
             try:

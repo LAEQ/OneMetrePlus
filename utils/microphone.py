@@ -4,10 +4,10 @@ import time
 
 
 class Microphone:
-    def __init__(self):
+    def __init__(self, _rate=25000):
         self.name = "hw:CARD=sndrpii2scard"
         self.card_number = None
-        self.rate = 11025
+        self.rate = _rate
         self.format = "wav"
         self.sample_format = ["S16_LE", "S24_LE", "S32_LE"]
 
@@ -47,10 +47,9 @@ class Microphone:
 if __name__ == "__main__":
     print("microphone test.")
     microphone = Microphone()
-    file = "test.wav"
     print("Start recording")
-    microphone.start_recording("test.wav")
-    time.sleep()
+    microphone.start_recording("/home/pi/captures/sound/test.wav")
+    time.sleep(10)
     print("End recording")
     microphone.stop_recording()
 

@@ -33,7 +33,8 @@ class GPS:
                             self.screen.hide_gps()
                         else:
                             self.screen.show_gps()
-                    except:
+                    except Exception as error:
+                        print(error)
                         pass
 
     def start_recording(self, file_path: str) -> None:
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     print("GPS: start")
     file = "gps_test.csv"
     gps.start_recording(file)
-    time.sleep(10)
+    time.sleep(120)
     gps.stop_recording()
     print("End")
     time.sleep(3)

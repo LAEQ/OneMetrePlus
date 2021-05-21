@@ -34,25 +34,20 @@ class Stream:
         if self.streaming_process is not None and self.streaming_process.poll() is not None:
             self.streaming_process.terminate()
 
-        command = self.get_streaming_command(file)
+        command = "ffmpeg -y -ar 11025 -acodec pcm_s32le -ac 1 -f alsa -i plughw:0 -f video4linux2 -input_format h264 " \
+                  "-video_size 1280x720 -framerate 30 -i /dev/video0 -c:v copy -metadata:s:v:0 rotate=0 {}".format(file)
         args = command.split(" ")
-        self.streaming_process = subprocess.Popen(args=args,
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.STDOUT,
-                                                  close_fds=True)
-        # os.system(command)
+        self.streaming_process = subprocess.Popen(args=args)
 
     def stop_streaming(self):
         self.streaming_process.terminate()
-        # pass
 
 
 if __name__ == "__main__":
     print("Streaming test.")
     stream = Stream()
-    file = "test.mp4"
     print("Start streaming")
-    stream.start_streaming("/home/pi/captures/video/test_3.mp4")
+    stream.start_streaming("/home/pi/captures/video/stream.mp4")
     time.sleep(30)
     print("End streaming")
     stream.stop_streaming()

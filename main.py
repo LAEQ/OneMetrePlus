@@ -24,6 +24,7 @@ from utils.camera import Camera
 from utils.export import Exporter
 from utils.gps import GPS
 from utils.microphone import Microphone
+from utils.stream import Stream
 from utils.videoconverter import VideoConverter
 from utils.config import Config
 from utils.filemanager import FileManager
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     start = b''
     record = True
     initial_distance = 0
-    id_cicliste = "ID1_C1"
+    id_cyclist = "ID1_C1"
 
     config = Config()
 
@@ -46,9 +47,10 @@ if __name__ == '__main__':
             exit(1)
 
     file_manager = FileManager(config.get_capture_home())
-    microphone = Microphone()
+    microphone = Microphone(_rate=25000)
     microphone.set_card_number()
-    camera = Camera()
+    camera = Camera(_config=config)
+    camera.camera.rotation = 180
     screen = Screen(port="/dev/ttyUSB2")
     lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
     gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
@@ -74,7 +76,7 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cicliste,
+                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cyclist,
                                                                                                    get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
@@ -158,7 +160,6 @@ if __name__ == '__main__':
             elif delete_serial == b'delete':
                 screen.delete_start()
                 try:
-                    print("icit")
                     file_manager.delete_files()
                     screen.delete_end()
                     page_counter = b''
