@@ -1,5 +1,4 @@
 import subprocess
-import os
 import time
 
 
@@ -13,8 +12,8 @@ class Stream:
         self.input_format = "h264"
         self.format = "wav"
         self.sample_format = ["S16_LE", "S24_LE", "S32_LE"]
-        self.camera_resolution_width=640
-        self.camera_resolution_height=360
+        self.camera_resolution_width = 640
+        self.camera_resolution_height = 360
         self.frame_rate = 25
         self.video_format = "video4linux2"
         self.input_device = "/dev/video0"
