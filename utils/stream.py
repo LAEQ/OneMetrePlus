@@ -20,7 +20,6 @@ class Stream:
         self.input_device = "/dev/video0"
         self.streaming_process = None
 
-
     def get_streaming_command(self, file):
         return "ffmpeg -y -use_wallclock_as_timestamps 1 -vsync 1 -async 1 " \
                "-ar {} -acodec {} -ac {} -f alsa -i plughw:{} " \

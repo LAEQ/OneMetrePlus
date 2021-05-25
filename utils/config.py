@@ -16,6 +16,7 @@ class Config:
 
         self.max_sensor_distance = 300
         self.distance_edge = 0
+        self.frame_rate = 25
 
     def get_max_distance(self):
         return self.max_sensor_distance * self.unit

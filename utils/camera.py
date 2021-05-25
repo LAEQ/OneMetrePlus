@@ -13,7 +13,7 @@ from utils.tools import get_date_time
 class Camera:
     def __init__(self, _config: Config):
         self.camera = picamera.PiCamera()
-        self.camera.framerate = 25
+        self.camera.framerate = _config.frame_rate
         self.camera.rotation = 0
         self.camera.annotate_background = picamera.Color("black")
         self.camera.annotate_text_size = 12
