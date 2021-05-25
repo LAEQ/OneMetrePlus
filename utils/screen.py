@@ -1,13 +1,5 @@
-from multiprocessing.context import Process
-from random import random
-
 import serial
-import asyncio
 import serial_asyncio
-import time
-import random
-
-from utils.tools import get_time, get_date
 
 
 class Screen:

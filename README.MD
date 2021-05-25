@@ -3,18 +3,7 @@
 Raspberry project for recording traffic during a bike ride.
 
 
-## Configuration
-Some global environments are required to run the project. Please add the following variables to your environement.
-
-```bash
-# ~/.bashrc
-export PROJECT_HOME=/home/pi/path/to/clone/project
-export CAPTURE_HOME=/home/pi/path/where/to/save/files
-export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
-```
-
-
-#### Systemd service  
+## Systemd service  
 
 To start the program after login, we use systemd to managed the python main script.
 

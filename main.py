@@ -37,7 +37,13 @@ if __name__ == '__main__':
     record = True
     id_cyclist = "ID1_C1"
 
-    config = Config()
+    setting_file = os.path.join(os.path.dirname(__file__), "settings.yml")
+
+    if os.path.exists(setting_file) is False:
+        print("Setting file is not found.\n".format(setting_file))
+        exit(1)
+
+    config = Config(setting_file)
 
     if os.path.exists(config.capture_dir) is False:
         print("Capture directory {} is not found.\n".format(config.capture_dir))
@@ -117,6 +123,8 @@ if __name__ == '__main__':
 
         while page_counter == b'page4':
             # Settings (resolution, distance, export, convert)
+            screen.set_distance(config.get_distance_edge())
+
             capture_serial = screen.read()
             exporter = None
 
@@ -131,7 +139,7 @@ if __name__ == '__main__':
             elif capture_serial == b'capture':
                 distance = lidar.read_distance_to_edge()
                 config.set_distance_edge(distance)
-                screen.set_distance(distance)
+                screen.set_distance(config.get_distance_edge())
             elif capture_serial == b'convert':
                 screen.convert_start()
                 try:

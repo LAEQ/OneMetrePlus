@@ -19,10 +19,10 @@ class Camera:
         self.camera.annotate_text_size = 12
         self.config = _config
         self.ffmpeg_process = None
-        self.camera.resolution = self.config.camera_resolution()
+        self.camera.resolution = self.config.get_resolution()
 
     def set_config(self, configuration: Config) -> None:
-        self.camera.resolution = configuration.camera_resolution()
+        self.camera.resolution = configuration.get_resolution()
 
     def start_recording(self, file_path: str) -> None:
         self.camera.annotate_text = get_date_time()

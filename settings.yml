@@ -1,0 +1,24 @@
+project:
+  home: "/home/pi/capteur-henao"
+  capture: "/home/pi/captures"
+camera:
+  frame_rate: 25
+  resolution:
+    small:
+      width: 400
+      height: 300
+    medium:
+      width: 600
+      height: 450
+    large:
+      width: 800
+      height: 600
+lidar:
+  unit:
+    cm: 1
+    inch: 0.393701
+  distance:
+    warning: 100
+    max: 300
+gps:
+  period_capture: 300

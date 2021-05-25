@@ -32,11 +32,6 @@ class Config:
     def get_max_distance(self):
         return self.max_distance * self.unit
 
-    def camera_resolution(self):
-        return self.resolution[0], self.resolution[1]
-
-    def max_distance(self):
-        return self.max_sensor_distance * self.unit
 
     def set_resolution(self, value):
         if value == b'800':
@@ -57,3 +52,6 @@ class Config:
 
     def set_distance_edge(self, distance):
         self.distance_edge = distance
+
+    def get_distance_edge(self):
+        return self.distance_edge * self.unit

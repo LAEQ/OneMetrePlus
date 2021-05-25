@@ -22,7 +22,7 @@ class Lidar:
             ser.reset_input_buffer()
 
             if read[0] == 0x59 and read[1] == 0x59:
-                result = ((read[2] + read[3] * 256) * self.config.unit)
+                result = (read[2] + read[3] * 256)
 
             return result
 
@@ -30,23 +30,23 @@ class Lidar:
         with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser, open(file_path, "w") as _file:
             unit = self.config.unit
             distance_edge = self.config.distance_edge
-            max_distance = self.config.get_max_distance()
+            max_distance = self.config.max_distance
             warning_distance = self.config.warning_distance
 
             while True:
                 recv = ser.read(9)
                 ser.reset_input_buffer()
                 if recv[0] == 0x59 and recv[1] == 0x59:
-                    d = ((recv[2] + recv[3] * 256) - distance_edge) * unit
+                    d = ((recv[2] + recv[3] * 256) - distance_edge)
 
                     if 0 < d < max_distance:
-                        _file.write("{},{}\n".format(time.time(), d))
+                        _file.write("{},{}\n".format(time.time(), d * unit))
                         _file.flush()
 
                         if d < warning_distance:
-                            self.screen.show_warning_distance(d)
+                            self.screen.show_warning_distance(d * unit)
                         else:
-                            self.screen.show_distance(d)
+                            self.screen.show_distance(d * unit)
                     else:
                         self.screen.show_distance_null()
 

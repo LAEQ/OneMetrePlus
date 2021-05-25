@@ -22,7 +22,6 @@ async def main(lp, _config: Config) -> None:
 
 
 async def read_screen():
-
     screen.menu()
 
     while True:
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     config = Config()
 
     screen = Screen("/dev/ttyUSB2")
-    file_manager = FileManager(config.get_capture_home())
+    file_manager = FileManager(config.capture_dir)
 
     microphone = Microphone(_rate=25000)
     microphone.set_card_number()

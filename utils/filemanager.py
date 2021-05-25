@@ -85,7 +85,6 @@ class FileManager:
         for f in self.get_all_files():
             try:
                 os.remove(f)
-
             except Exception as error:
                 print(error)
 
