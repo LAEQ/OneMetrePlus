@@ -83,7 +83,6 @@ class FileManager:
 
     def delete_files(self):
         for f in self.get_all_files():
-            print(f)
             try:
                 os.remove(f)
 
