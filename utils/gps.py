@@ -29,13 +29,12 @@ class GPS:
                         _file.write(value)
                         _file.flush()
 
+                        self.screen.show_gps()
+
                         if position.latitude == 0:
                             self.screen.hide_gps()
-                        else:
-                            self.screen.show_gps()
-                    except Exception as error:
-                        print(error)
-                        pass
+                    except:
+                        self.screen.hide_gps()
 
     def start_recording(self, file_path: str) -> None:
         self.process = Process(target=self.record, args=(file_path,))

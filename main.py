@@ -24,7 +24,6 @@ from utils.camera import Camera
 from utils.export import Exporter
 from utils.gps import GPS
 from utils.microphone import Microphone
-from utils.stream import Stream
 from utils.videoconverter import VideoConverter
 from utils.config import Config
 from utils.filemanager import FileManager
@@ -76,14 +75,14 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, file_distance, file_gps = file_manager.start_recording(id_cyclist,
-                                                                                                   get_date_time_stringify())
+                    file_video, file_sound, \
+                        file_distance, file_gps = file_manager.start_recording(id_cyclist, get_date_time_stringify())
                     microphone.start_recording(file_sound)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
                     screen.show_recording()
-                    # screen.show_microphone()
+                    screen.show_microphone()
 
                     while record is True:
                         stop = screen.read()
@@ -132,7 +131,8 @@ if __name__ == '__main__':
             if capture_serial == b'page1':
                 page_counter = b''
             elif capture_serial == b'capture':
-                distance = lidar.set_distance()
+                distance = lidar.read_distance_to_edge()
+                config.set_distance_edge(distance)
                 screen.set_distance(distance)
             elif capture_serial == b'convert':
                 screen.convert_start()

@@ -58,8 +58,6 @@ class Config:
         else:
             self.unit = 1
 
-        print(self.unit)
-
     def get_resolution(self):
         return self.resolution[0], self.resolution[1]
 

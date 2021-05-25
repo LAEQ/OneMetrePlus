@@ -1,16 +1,9 @@
 import os
-import queue
-import threading
 import time
-import random
-
 import serial
 from multiprocessing.context import Process
-
 from utils.config import Config
-from utils.messenger import Messenger
 from utils.screen import Screen
-from utils.tools import get_time
 
 
 class Lidar:
@@ -20,18 +13,11 @@ class Lidar:
         self.port = port
         self.baudrate = baudrate
         self.timeout = 1
-        # self.serial = serial.Serial()
-        # self.serial.port = port
-        # self.serial.baudrate = baudrate
         self.process = None
 
-        self.warning_message = b'p4.pic=7\xff\xff\xff'
-        self.warning_no = b'p4.pic=8\xff\xff\xff'
-        self.message_dist_null = b't2.txt="000"\xff\xff\xff'
-
-    def set_distance(self) -> int:
+    def read_distance_to_edge(self) -> int:
         with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser:
-            result = -1
+            result = 0
             read = ser.read(9)
             ser.reset_input_buffer()
 
@@ -43,7 +29,7 @@ class Lidar:
     def record(self, file_path: str) -> None:
         with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser, open(file_path, "w") as _file:
             unit = self.config.unit
-            initial_distance = self.config.distance_edge
+            distance_edge = self.config.distance_edge
             max_distance = self.config.get_max_distance()
             warning_distance = self.config.warning_distance
 
@@ -51,7 +37,7 @@ class Lidar:
                 recv = ser.read(9)
                 ser.reset_input_buffer()
                 if recv[0] == 0x59 and recv[1] == 0x59:
-                    d = ((recv[2] + recv[3] * 256) - initial_distance) * unit
+                    d = ((recv[2] + recv[3] * 256) - distance_edge) * unit
 
                     if 0 < d < max_distance:
                         _file.write("{},{}\n".format(time.time(), d))
