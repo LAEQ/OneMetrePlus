@@ -35,17 +35,15 @@ from utils.tools import get_date, get_time, get_date_time_stringify
 if __name__ == '__main__':
     start = b''
     record = True
-    initial_distance = 0
     id_cyclist = "ID1_C1"
 
     config = Config()
 
-    for v in config.global_vars:
-        if os.path.exists(v) is False:
-            print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
-            exit(1)
+    if os.path.exists(config.capture_dir) is False:
+        print("Capture directory {} is not found.\n".format(config.capture_dir))
+        exit(1)
 
-    file_manager = FileManager(config.get_capture_home())
+    file_manager = FileManager(config.capture_dir)
     microphone = Microphone(_rate=25000)
     microphone.set_card_number()
     camera = Camera(_config=config)
@@ -148,7 +146,6 @@ if __name__ == '__main__':
                     screen.export_end()
                 except:
                     screen.export_error()
-
             elif config.is_valid_width(capture_serial):
                 config.set_resolution(capture_serial)
 
@@ -164,7 +161,7 @@ if __name__ == '__main__':
                     screen.delete_end()
                     page_counter = b''
                     screen.menu()
-                except Exception as error:
-                    print(error)
+                except:
+                    pass
                 finally:
                     delete_serial = b''

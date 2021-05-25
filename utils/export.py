@@ -22,6 +22,6 @@ class Exporter:
 
 if __name__ == "__main__":
     config = Config()
-    manager = FileManager(config.get_capture_home())
+    manager = FileManager(config.capture_dir)
     export = Exporter()
     export.export(manager)

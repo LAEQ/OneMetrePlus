@@ -1,31 +1,36 @@
-import os
+import yaml
 
 
 class Config:
-    def __init__(self):
-        self.global_vars = ["/home/pi/capteur-henao", "/home/pi/captures"]
-        self.resolutions = [[800, 600], [600, 450], [400, 300]]
+    def __init__(self, file: str):
+        with open(file, 'r') as stream:
+            self.settings = yaml.safe_load(stream)
 
-        self.gps_period_capture = 300
-        self.resolution = None
-        self.unit = 1
+        self.project_home = self.settings["project"]["home"]
+        self.capture_dir = self.settings["project"]["capture"]
 
-        self.set_resolution(None)
-        self.warning_distance = 100
-        self.max_distance = 260
+        # GPS
+        self.gps_period_capture = self.settings['gps']['period_capture']
 
-        self.max_sensor_distance = 300
+        # Lidar
+        self.unit = self.settings['lidar']['unit']['cm']
+        self.warning_distance = self.settings['lidar']['distance']['warning']
+        self.max_distance = self.settings['lidar']['distance']['max']
         self.distance_edge = 0
-        self.frame_rate = 25
 
-    def get_max_distance(self):
-        return self.max_sensor_distance * self.unit
+        # Camera
+        self.frame_rate = self.settings['camera']['frame_rate']
+        self.resolution = self.settings['camera']['resolution']['large']
+
+    def get_camera_widths(self):
+        widths = [self.settings['camera']['resolution'][key]['width'] for key in self.settings['camera']['resolution']]
+        return [bytes(str(value), "utf8") for value in widths]
 
     def is_valid_width(self, value):
         return value in self.get_camera_widths()
 
-    def get_camera_widths(self):
-        return [bytearray(str(resolution[0]), "utf8") for resolution in self.resolutions]
+    def get_max_distance(self):
+        return self.max_distance * self.unit
 
     def camera_resolution(self):
         return self.resolution[0], self.resolution[1]
@@ -33,33 +38,22 @@ class Config:
     def max_distance(self):
         return self.max_sensor_distance * self.unit
 
-    def get_project_home(self):
-        return self.global_vars[0]
-
-    def get_capture_home(self):
-        return self.global_vars[1]
-
     def set_resolution(self, value):
-        result = self.resolutions[-1]
-
-        try:
-            value = int(value.decode('ascii'))
-            result = next(filter(lambda resolution: resolution[0] == value, self.resolutions), result)
-        except:
-            pass
-        finally:
-            self.resolution = result
-            return self.get_resolution()
+        if value == b'800':
+            self.resolution = self.settings['camera']['resolution']['large']
+        elif value == b'600':
+            self.resolution = self.settings['camera']['resolution']['medium']
+        else:
+            self.resolution = self.settings['camera']['resolution']['small']
 
     def set_unit(self, value):
-        print(value)
         if value == b'in':
-            self.unit = 0.393701
+            self.unit = self.settings['lidar']['unit']['inch']
         else:
-            self.unit = 1
+            self.unit = self.settings['lidar']['unit']['cm']
 
     def get_resolution(self):
-        return self.resolution[0], self.resolution[1]
+        return self.resolution['width'], self.resolution['height']
 
     def set_distance_edge(self, distance):
         self.distance_edge = distance
