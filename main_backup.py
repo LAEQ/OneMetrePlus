@@ -372,7 +372,7 @@ if __name__ == '__main__':
             print("Global variable {} is missing. Please read carefully the manual.\n".format(v))
             exit(1)
 
-    file_manager = FileManager(config.get_capture_home())
+    file_manager = FileManager(config.capture_dir)
     microphone = Microphone()
     camera = Camera()
     video_converter = VideoConverter()
@@ -500,7 +500,7 @@ if __name__ == '__main__':
             if capture_serial == b'page1':
                 page_counter = b''
             elif capture_serial == b'capture':
-                distance = lidar.set_distance(config)
+                distance = lidar.read_distance_to_edge(config)
                 screen.set_distance(distance)
             elif capture_serial == b'convert':
                 print("convert to come")

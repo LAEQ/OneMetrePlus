@@ -29,7 +29,19 @@ https://blog.miguelgrinberg.com/post/how-to-make-python-wait
 https://cuyu.github.io/python/2016/08/15/Terminate-multiprocess-in-Python-correctly-and-gracefully
 https://www.infoworld.com/article/3315121/python-threading-and-subprocesses-explained.html
 
+https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats
+https://ostechnix.com/20-ffmpeg-commands-beginners/
+
 ```
 # print or control the kernel ring buffer
 dmesg
+```
+
+```
+# Get number of frames
+ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 test.h264
+
+# Get duration
+ffmpeg -i test.h264 -f null -
+
 ```
