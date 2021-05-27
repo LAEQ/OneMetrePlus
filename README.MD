@@ -1,18 +1,17 @@
 # Capture Raspberry Pi project
 
-description to come
+Raspberry project for recording traffic during a bike ride.
 
-#### Test unitaires
+
+## Systemd service  
+
+To start the program after login, we use systemd to managed the python main script.
+
+You must create a file with the following configuration accordingly with your setup. 
+
+| IMPORTANT: The log files must be created before the start/enabling of the service. The service does not generate the files.
 ```bash
-python3 -m unittest
-```
-
-#### Configuration service  
-Create a file ~/.config/systemd/user/capture.service
-
-Note: modify accordingly with your setup !
-
-```bash
+# ~/.config/systemd/user/capture.service
 [Unit]
 Description=Capture service
 
@@ -33,14 +32,12 @@ Alias=capture.service
 
 Configuration logs
 ```bash
-# Create log files (mandatory)
-touch /home/pi/info.log /home/pi/error.log
 systemctl --user daemon-reload
 systemctl --user enable capture.service
 systemctl --user start capture.service
 ```
 
-#### Manage services 
+### Some services to disable 
 
 ```bash
 systemctl start|stop service
@@ -66,4 +63,9 @@ systemctl disable hciuart
 ### Wifi card
 ```bash
 ip link set dev eth0 down
+```
+
+#### Unit tests
+```bash
+python3 -m unittest discover
 ```

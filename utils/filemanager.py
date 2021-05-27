@@ -2,19 +2,22 @@ import os
 import glob
 
 
-class Config:
-    def __init__(self, home="~/Desktop/Capture/files"):
+class FileManager:
+    """
+    Manager  for capturing, exporting and deleting video, sound, gps and distance files
+    """
+    def __init__(self, home):
         self.home = home
         self.directories = ["sound", "video", "gps", "distance", "export"]
         self.dir_paths = [os.path.join(self.home, folder) for folder in self.directories]
 
-        # Create app structure
+        # Create capture structure
         self.init()
 
     def init(self):
         for f in self.dir_paths:
             if os.path.exists(f) is False:
-                os.mkdir(f)
+                os.makedirs(f)
 
     def sound_path(self):
         return self.dir_paths[0]
@@ -43,7 +46,7 @@ class Config:
     def new_sound(self, prefix, timestamp):
         return os.path.join(self.sound_path(), "{}_{}.wav".format(prefix, timestamp))
 
-    def start(self, prefix, timestamp):
+    def start_recording(self, prefix, timestamp):
         return self.new_video(prefix, timestamp), \
                self.new_sound(prefix, timestamp), \
                self.new_distance(prefix, timestamp), \
@@ -61,14 +64,27 @@ class Config:
     def get_distance(self):
         return glob.glob(os.path.join(self.distance_path(), "*"))
 
+    def get_export(self):
+        return glob.glob(os.path.join(self.export_path(), "*"))
+
     def get_video_sound_tuples(self):
         video_files = self.get_videos()
         sound_files = self.get_sounds()
+        export_files = [file.replace("video", "export").replace("h264", 'mp4') for file in video_files]
 
         video_files.sort()
         sound_files.sort()
+        export_files.sort()
 
-        return zip(video_files, sound_files)
+        return zip(video_files, sound_files, export_files)
 
     def get_all_files(self):
-        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance()
+        return self.get_videos() + self.get_sounds() + self.get_gps() + self.get_distance() + self.get_export()
+
+    def delete_files(self):
+        for f in self.get_all_files():
+            try:
+                os.remove(f)
+            except Exception as error:
+                print(error)
+
