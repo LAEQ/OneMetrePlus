@@ -1,19 +1,18 @@
 """
-Raspberry project to record traffic with vehicles passing by during a bike ride.
+One meter plus (1M+): a multifunctional open source sensor for bicycles based on raspberry pi
 
 Hardware:
     - RPi Camera (G), Fisheye Lens Angle of View (diagonal) : 160 degree,5 megapixel OV5647 sensor
-    - I2S Output Digital Microphone, High SNR of 65dB(A)
     - Beitian BN-880 GPS, Level Positioning Precision: 2m At Open, Wind, Output Frequency:1Hz-10Hz,Default 1Hz
     - TFMini Plus - Micro LiDAR Module, Operating Range - 0.1m~12m, Distance resolution - 5mm, Frame rate - 1-1000Hz(adjustable)
 
-Hardware: Andres Henao <email@toprovide>
+Hardware: Andres Henao <carlosa.henaof@inrs.ca>
 Software:
-    - Andres Henao <email@toprovide>
+    - Andres Henao <carlosa.henaof@inrs.ca>
     - David Maignan <davidmaignan@gmail.com>
 
 Supervisor:
-    - Philippe Apparicio <philippe.apparicio@ucs.inrs.ca>
+    - Philippe Apparicio <philippe.apparicio@inrs.ca>
 
 Source code: url to provide
 Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
@@ -49,8 +48,7 @@ if __name__ == '__main__':
         exit(1)
 
     file_manager = FileManager(config.capture_dir)
-    camera = Camera(_config=config)
-    camera.camera.rotation = 180
+    camera = Camera()
     screen = Screen(port="/dev/ttyUSB2")
     lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
     gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
@@ -76,7 +74,7 @@ if __name__ == '__main__':
                     file_video, file_sound, \
                         file_distance, file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
 
-
+                    camera.set_config(config)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)

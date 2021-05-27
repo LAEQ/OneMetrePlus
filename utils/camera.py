@@ -13,7 +13,8 @@ class Camera:
         self.recording_process = None
 
     def set_config(self, configuration: Config) -> None:
-        self.width, self.height = configuration.camera_resolution()
+        self.width, self.height = configuration.get_resolution()
+        print (self.width, self.height)
 
     def get_record_command(self, file):        
         return "raspivid -t 5000000 -rot {} -fps {} -w {} -h {} -ae 15,0xff,0x808000 -a 1024 -a 12 -o {}".format(

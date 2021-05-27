@@ -33,11 +33,10 @@ class Config:
     def get_max_distance(self):
         return self.max_distance * self.unit
 
-
     def set_resolution(self, value):
-        if value == b'800':
+        if value == b'960':
             self.resolution = self.settings['camera']['resolution']['large']
-        elif value == b'600':
+        elif value == b'768':
             self.resolution = self.settings['camera']['resolution']['medium']
         else:
             self.resolution = self.settings['camera']['resolution']['small']
