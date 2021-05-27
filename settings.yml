@@ -1,6 +1,7 @@
 project:
   home: "/home/pi/capteur-henao"
   capture: "/home/pi/captures"
+  id_cyclist: "ID1_C1"
 camera:
   frame_rate: 25
   resolution:

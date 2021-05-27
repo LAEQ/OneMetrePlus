@@ -8,6 +8,7 @@ class Config:
 
         self.project_home = self.settings["project"]["home"]
         self.capture_dir = self.settings["project"]["capture"]
+        self.id_cyclist = self.settings["project"]["id_cyclist"]
 
         # GPS
         self.gps_period_capture = self.settings['gps']['period_capture']

@@ -50,8 +50,6 @@ if __name__ == '__main__':
         exit(1)
 
     file_manager = FileManager(config.capture_dir)
-    microphone = Microphone(_rate=25000)
-    microphone.set_card_number()
     camera = Camera(_config=config)
     camera.camera.rotation = 180
     screen = Screen(port="/dev/ttyUSB2")
@@ -80,8 +78,9 @@ if __name__ == '__main__':
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
                     file_video, file_sound, \
-                        file_distance, file_gps = file_manager.start_recording(id_cyclist, get_date_time_stringify())
-                    microphone.start_recording(file_sound)
+                        file_distance, file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
+
+
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
@@ -100,7 +99,6 @@ if __name__ == '__main__':
                             record = False
                             page_counter = b''
 
-                    microphone.stop_recording()
                     camera.stop_recording()
                     lidar.stop_recording()
                     gps.stop_recording()
