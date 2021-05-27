@@ -45,11 +45,11 @@ class Screen:
         self._dist0 = b'"000"'
 
         # page number for the animation LAEQ
-        self._page0 = b'page 0' + self.eof
+        self._page0 = b'page animation' + self.eof
         # page number for the main menu
-        self._page1 = b'page 1' + self.eof
+        self._page1 = b'page home' + self.eof
         # page number for the record page
-        self._page2 = b'page 2' + self.eof
+        self._page2 = b'page record' + self.eof
 
         # Gif for delete files
         self._delete = b'va1.val=0'
@@ -102,7 +102,7 @@ class Screen:
         self.hide_gps()
         self.show_distance_null()
         self.hide_warning()
-        self.hide_microphone()
+
 
     def show_raspberry(self):
         self.serial.write(self._RP1 + self.eof)

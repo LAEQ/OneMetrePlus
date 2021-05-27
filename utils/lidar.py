@@ -32,6 +32,7 @@ class Lidar:
             distance_edge = self.config.distance_edge
             max_distance = self.config.max_distance
             warning_distance = self.config.warning_distance
+            _file.write("time,distance\n")
 
             while True:
                 recv = ser.read(9)

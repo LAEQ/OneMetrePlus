@@ -79,7 +79,6 @@ if __name__ == '__main__':
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
                     screen.show_recording()
-                    screen.show_microphone()
 
                     while record is True:
                         stop = screen.read()
