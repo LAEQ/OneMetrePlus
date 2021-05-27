@@ -35,7 +35,6 @@ from utils.tools import get_date, get_time, get_date_time_stringify
 if __name__ == '__main__':
     start = b''
     record = True
-    #id_cyclist = "ID1_C1"
 
     setting_file = os.path.join(os.path.dirname(__file__), "settings.yml")
 
@@ -63,10 +62,7 @@ if __name__ == '__main__':
         screen.set_date(get_date())
         screen.set_time(get_time())
 
-        page_counter == b'page2'
-
-        # page 2 /  record
-        while page_counter == b'page2':
+        while page_counter == b'record':
             screen.clear()
             screen.show_raspberry()
 
@@ -93,9 +89,9 @@ if __name__ == '__main__':
 
                         if stop == b'stop':
                             record = False
-                            page_counter = b'page2'
+                            page_counter = b'record'
 
-                        if stop == b'page1':
+                        if stop == b'home':
                             record = False
                             page_counter = b''
 
@@ -104,22 +100,22 @@ if __name__ == '__main__':
                     gps.stop_recording()
                     screen.clear()
 
-                if start == b'page1':  # In/out page1
+                if start == b'home':  # In/out page1
                     page_counter = b''
 
             record = True
             start = b''
 
-        while page_counter == b'page3':
+        while page_counter == b'setup':
             # page 3 (setup)
             format_serial = screen.read()
 
-            if format_serial == b'page1':  # In/out page 2
+            if format_serial == b'home':  # In/out page 2
                 page_counter = b''
             elif format_serial == b'in' or format_serial == b'cm':
                 config.set_unit(format_serial)
 
-        while page_counter == b'page4':
+        while page_counter == b'format':
             # Settings (resolution, distance, export, convert)
             screen.set_distance(config.get_distance_edge())
 
@@ -132,7 +128,7 @@ if __name__ == '__main__':
             except:
                 pass
 
-            if capture_serial == b'page1':
+            if capture_serial == b'home':
                 page_counter = b''
             elif capture_serial == b'capture':
                 distance = lidar.read_distance_to_edge()
@@ -155,10 +151,10 @@ if __name__ == '__main__':
             elif config.is_valid_width(capture_serial):
                 config.set_resolution(capture_serial)
 
-        while page_counter == b'page5':
-            # page 5  (delete files)
+        while page_counter == b'delete':
+
             delete_serial = screen.read()
-            if delete_serial == b'page1':
+            if delete_serial == b'home':
                 page_counter = b''
             elif delete_serial == b'delete':
                 screen.delete_start()
