@@ -35,7 +35,7 @@ from utils.tools import get_date, get_time, get_date_time_stringify
 if __name__ == '__main__':
     start = b''
     record = True
-    id_cyclist = "ID1_C1"
+    #id_cyclist = "ID1_C1"
 
     setting_file = os.path.join(os.path.dirname(__file__), "settings.yml")
 
