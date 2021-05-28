@@ -71,8 +71,8 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, \
-                        file_distance, file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
+                    file_video, file_distance, \
+                        file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
 
                     camera.set_config(config)
                     camera.start_recording(file_video)
@@ -104,7 +104,6 @@ if __name__ == '__main__':
             start = b''
 
         while page_counter == b'setup':
-            # page 3 (setup)
             format_serial = screen.read()
 
             if format_serial == b'home':  # In/out page 2
