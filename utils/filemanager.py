@@ -76,3 +76,10 @@ class FileManager:
             except Exception as error:
                 print(error)
 
+    def delete_export_files(self):
+        for f in self.get_export():
+            try:
+                os.remove(f)
+            except Exception as error:
+                print(error)
+

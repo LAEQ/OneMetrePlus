@@ -133,6 +133,7 @@ if __name__ == '__main__':
             elif capture_serial == b'convert':
                 screen.convert_start()
                 try:
+                    file_manager.delete_export_files()
                     converter = VideoConverter(file_manager.get_video_sound_tuples())
                     converter.convert_videos()
                     screen.convert_end()

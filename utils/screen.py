@@ -58,6 +58,7 @@ class Screen:
         # Convert files
         self._convert = b'va1.val=0'
         self._convert_end = b'va1.val=1'
+        self._convert_end_green = b'p8.pic=26'
         self._convert_error = b'p8.pic=36'
 
         # Export
@@ -148,6 +149,7 @@ class Screen:
 
     def convert_end(self):
         self.serial.write(self._convert_end + self.eof)
+        self.serial.write(self._convert_end_green + self.eof)        
 
     def convert_error(self):
         self.serial.write(self._convert_end + self.eof)
