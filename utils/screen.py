@@ -103,7 +103,6 @@ class Screen:
         self.show_distance_null()
         self.hide_warning()
 
-
     def show_raspberry(self):
         self.serial.write(self._RP1 + self.eof)
 

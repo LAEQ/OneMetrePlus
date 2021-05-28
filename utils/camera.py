@@ -7,13 +7,13 @@ import subprocess
 
 
 class Camera:
-    def __init__(self):
-        self.framerate = 25
+    def __init__(self): 
         self.rotation = 180
         self.recording_process = None
 
     def set_config(self, configuration: Config) -> None:
         self.width, self.height = configuration.get_resolution()
+        self.framerate = configuration.frame_rate
         print (self.width, self.height)
 
     def get_record_command(self, file):        
@@ -27,7 +27,6 @@ class Camera:
 
         command = self.get_record_command(file)
         args = command.split(" ")
-        print (args)
         self.recording_process = subprocess.Popen(args=args,
                                                   stdout=subprocess.DEVNULL,
                                                   stderr=subprocess.STDOUT,
