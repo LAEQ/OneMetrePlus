@@ -16,12 +16,13 @@ class Exporter:
             raise Exception("No usb found")
 
     def export(self, _manager: FileManager):
-        dest_folder = os.path.join(self.mount_point, "export")
-        shutil.copytree(_manager.export_path(), dest_folder)
+        dest_folder = os.path.join(self.mount_point, "export_files")
+        shutil.copytree(_manager.home, dest_folder)
 
 
 if __name__ == "__main__":
-    config = Config()
+    setting_file = os.path.join(os.path.dirname(__file__), "settings.yml")
+    config = Config(setting_file)
     manager = FileManager(config.capture_dir)
     export = Exporter()
     export.export(manager)

@@ -64,6 +64,7 @@ class Screen:
         # Export
         self._pexport = b'va3.val=0'
         self._pendexport = b'va3.val=1'
+        self._pendexport_green = b'p9.pic=26'
         self._perrorexport = b'p9.pic=36'
 
         # convert
@@ -160,7 +161,7 @@ class Screen:
 
     def export_end(self):
         self.serial.write(self._pendexport + self.eof)
-        self.serial.write(self._inishexport + self.eof)
+        self.serial.write(self._pendexport_green + self.eof)
 
     def export_error(self):
         self.serial.write(self._pendexport + self.eof)

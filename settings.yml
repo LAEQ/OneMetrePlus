@@ -1,6 +1,6 @@
 project:
   home: "/home/pi/"
-  capture: "/home/pi/captures"
+  capture: "/home/pi/captures/"
   id_cyclist: "ID1_C1"
 camera:
   frame_rate: 25

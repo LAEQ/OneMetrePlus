@@ -140,6 +140,7 @@ if __name__ == '__main__':
                 except:
                     screen.convert_error()
             elif capture_serial == b'export':
+                screen.export_start()
                 try:
                     exporter.export(file_manager)
                     screen.export_end()
