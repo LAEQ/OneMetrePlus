@@ -207,7 +207,7 @@ class Screen:
 if __name__ == "__main__":
     screen = Screen(port="/dev/ttyUSB2")
 
-    screen.export_error()
+    screen.menu()
 
 
 

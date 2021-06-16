@@ -17,7 +17,7 @@ class Camera:
         print (self.width, self.height)
 
     def get_record_command(self, file):        
-        return "raspivid -t 5000000 -rot {} -fps {} -w {} -h {} -ae 15,0xff,0x808000 -a 1024 -a 12 -o {}".format(
+        return "raspivid -t 8000000 -rot {} -fps {} -w {} -h {} -ae 15,0xff,0x808000 -a 1024 -a 12 -o {}".format(
             self.rotation, self.framerate, self.width, self.height,file
         )
 

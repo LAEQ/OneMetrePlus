@@ -54,7 +54,7 @@ if __name__ == '__main__':
     gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
 
     screen.menu()
-
+    print("bandera 1")
     while True:
         page_counter = screen.read()
         screen.set_date(get_date())
