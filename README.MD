@@ -69,3 +69,10 @@ ip link set dev eth0 down
 ```bash
 python3 -m unittest discover
 ```
+
+#### Configuration .nanobashrc
+```bash
+export PROJECT_HOME=/home/pi/capteur-henao
+export CAPTURE_HOME=/home/pi/captures
+export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
+```
