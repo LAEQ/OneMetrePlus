@@ -13,19 +13,17 @@ class VideoConverter:
             self.convert(f)
 
     def convert(self, args):
-        command = "ffmpeg -y -i {} -i {} -c:v copy -c:a aac -shortest {}".format(args[0], args[1], args[2])
+        command = "ffmpeg -framerate 25 -i {} -c copy {}".format(args[0], args[1])
         return subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
     videos = glob.glob("captures/video/*")
-    sounds = glob.glob("captures/sound/*")
-
     videos.sort()
-    sounds.sort()
+
     exports = [file.replace("video", "export").replace("h264", "mp4") for file in videos]
 
-    files = zip(videos, sounds, exports)
+    files = zip(videos, exports)
 
     converter = VideoConverter(files)
     converter.convert_videos()

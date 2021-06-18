@@ -1,63 +1,50 @@
-import os
-import subprocess
 import time
-
-import ffmpeg
-import picamera
-import cv2
+import os
 
 from utils.config import Config
 from utils.tools import get_date_time
+import subprocess
 
 
 class Camera:
-    def __init__(self, _config: Config):
-        self.camera = picamera.PiCamera()
-        self.camera.framerate = _config.frame_rate
-        self.camera.rotation = 0
-        self.camera.annotate_background = picamera.Color("black")
-        self.camera.annotate_text_size = 12
-        self.config = _config
-        self.ffmpeg_process = None
-        self.camera.resolution = self.config.get_resolution()
+    def __init__(self): 
+        self.rotation = 180
+        self.recording_process = None
 
     def set_config(self, configuration: Config) -> None:
-        self.camera.resolution = configuration.get_resolution()
+        self.width, self.height = configuration.get_resolution()
+        self.framerate = configuration.frame_rate
+        print (self.width, self.height)
 
-    def start_recording(self, file_path: str) -> None:
-        self.camera.annotate_text = get_date_time()
-        self.camera.start_recording(file_path)
+    def get_record_command(self, file):        
+        return "raspivid -t 8000000 -rot {} -fps {} -w {} -h {} -ae 15,0xff,0x808000 -a 1024 -a 12 -o {}".format(
+            self.rotation, self.framerate, self.width, self.height,file
+        )
 
-    def stop_recording(self) -> None:
-        self.camera.stop_recording()
+    def start_recording(self, file):
+        if self.recording_process is not None and self.recording_process.poll() is not None:
+            self.recording_process.terminate()
 
-    def get_record_command(self, file):
-        width, height = self.config.get_resolution()
-        resolution = "{}x{}".format(width, height)
-        return "ffmpeg -f video4linux2 -input_format h264 -video_size {} " \
-               "-framerate 30 -i /dev/video0 -vcodec copy -an {}".format(resolution, file)
+        command = self.get_record_command(file)
+        args = command.split(" ")
+        self.recording_process = subprocess.Popen(args=args,
+                                                  stdout=subprocess.DEVNULL,
+                                                  stderr=subprocess.STDOUT,
+                                                  close_fds=True)
 
-    def start_ffmpeg_recording(self, _file):
-        command = "ffmpeg -y -use_wallclock_as_timestamps 1 -re " \
-                  "-thread_queue_size 4096 -vsync 1 -ar 25000 -ac 1 -f alsa -acodec pcm_s32le -i plughw:0  " \
-                  "-thread_queue_size 4096 -async 1 -f video4linux2 -input_format h264 -video_size 960x540 " \
-                  "-framerate 25 -i /dev/video0 " \
-                  "-c:v copy -c:a aac -metadata:s:v:0 rotate=0 {}".format(_file)
-
-        self.ffmpeg_process = subprocess.Popen(args=command, shell=True)
-
-    def stop_ffmpeg_recording(self):
-        self.ffmpeg_process.terminate()
+    def stop_recording(self):
+        self.recording_process.terminate()
 
 
 if __name__ == "__main__":
     config = Config()
-    camera = Camera(_config=config)
-    file = "/home/pi/captures/video/camera_stream.mp4"
-    camera.start_ffmpeg_recording(file)
-    time.sleep(10)
-    camera.stop_ffmpeg_recording()
-    print("Test")
+    camera = Camera()
+    camera.set_config(config)
+
+    file = "testvideo.h264"
+    camera.start_recording(file)
+    time.sleep(5)
+    camera.stop_recording()
 
 
 

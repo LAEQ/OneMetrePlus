@@ -45,11 +45,11 @@ class Screen:
         self._dist0 = b'"000"'
 
         # page number for the animation LAEQ
-        self._page0 = b'page 0' + self.eof
+        self._page0 = b'page animation' + self.eof
         # page number for the main menu
-        self._page1 = b'page 1' + self.eof
+        self._page1 = b'page home' + self.eof
         # page number for the record page
-        self._page2 = b'page 2' + self.eof
+        self._page2 = b'page record' + self.eof
 
         # Gif for delete files
         self._delete = b'va1.val=0'
@@ -58,11 +58,13 @@ class Screen:
         # Convert files
         self._convert = b'va1.val=0'
         self._convert_end = b'va1.val=1'
+        self._convert_end_green = b'p8.pic=26'
         self._convert_error = b'p8.pic=36'
 
         # Export
         self._pexport = b'va3.val=0'
         self._pendexport = b'va3.val=1'
+        self._pendexport_green = b'p9.pic=26'
         self._perrorexport = b'p9.pic=36'
 
         # convert
@@ -102,7 +104,6 @@ class Screen:
         self.hide_gps()
         self.show_distance_null()
         self.hide_warning()
-        self.hide_microphone()
 
     def show_raspberry(self):
         self.serial.write(self._RP1 + self.eof)
@@ -149,6 +150,7 @@ class Screen:
 
     def convert_end(self):
         self.serial.write(self._convert_end + self.eof)
+        self.serial.write(self._convert_end_green + self.eof)        
 
     def convert_error(self):
         self.serial.write(self._convert_end + self.eof)
@@ -159,7 +161,7 @@ class Screen:
 
     def export_end(self):
         self.serial.write(self._pendexport + self.eof)
-        self.serial.write(self._inishexport + self.eof)
+        self.serial.write(self._pendexport_green + self.eof)
 
     def export_error(self):
         self.serial.write(self._pendexport + self.eof)
@@ -205,7 +207,7 @@ class Screen:
 if __name__ == "__main__":
     screen = Screen(port="/dev/ttyUSB2")
 
-    screen.export_error()
+    screen.menu()
 
 
 

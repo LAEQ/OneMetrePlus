@@ -20,6 +20,7 @@ class GPS:
 
     def record(self, file_path: str) -> None:
         with serial.Serial(self.port, self.baudrate) as ser, open(file_path, "w") as _file:
+            _file.write("time,latitude,longitude\n")
             while True:
                 data = ser.readline().decode('ascii', errors='replace')
                 if data[1:6] == "GNGGA":

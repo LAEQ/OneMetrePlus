@@ -1,19 +1,18 @@
 """
-Raspberry project to record traffic with vehicles passing by during a bike ride.
+One meter plus (1M+): a multifunctional open source sensor for bicycles based on raspberry pi
 
 Hardware:
     - RPi Camera (G), Fisheye Lens Angle of View (diagonal) : 160 degree,5 megapixel OV5647 sensor
-    - I2S Output Digital Microphone, High SNR of 65dB(A)
     - Beitian BN-880 GPS, Level Positioning Precision: 2m At Open, Wind, Output Frequency:1Hz-10Hz,Default 1Hz
     - TFMini Plus - Micro LiDAR Module, Operating Range - 0.1m~12m, Distance resolution - 5mm, Frame rate - 1-1000Hz(adjustable)
 
-Hardware: Andres Henao <email@toprovide>
+Hardware: Andres Henao <carlosa.henaof@inrs.ca>
 Software:
-    - Andres Henao <email@toprovide>
+    - Andres Henao <carlosa.henaof@inrs.ca>
     - David Maignan <davidmaignan@gmail.com>
 
 Supervisor:
-    - Philippe Apparicio <philippe.apparicio@ucs.inrs.ca>
+    - Philippe Apparicio <philippe.apparicio@inrs.ca>
 
 Source code: url to provide
 Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
@@ -35,7 +34,6 @@ from utils.tools import get_date, get_time, get_date_time_stringify
 if __name__ == '__main__':
     start = b''
     record = True
-    id_cyclist = "ID1_C1"
 
     setting_file = os.path.join(os.path.dirname(__file__), "settings.yml")
 
@@ -50,25 +48,19 @@ if __name__ == '__main__':
         exit(1)
 
     file_manager = FileManager(config.capture_dir)
-    microphone = Microphone(_rate=25000)
-    microphone.set_card_number()
-    camera = Camera(_config=config)
-    camera.camera.rotation = 180
+    camera = Camera()
     screen = Screen(port="/dev/ttyUSB2")
     lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
     gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
 
     screen.menu()
-
+    print("bandera 1")
     while True:
         page_counter = screen.read()
         screen.set_date(get_date())
         screen.set_time(get_time())
 
-        page_counter == b'page2'
-
-        # page 2 /  record
-        while page_counter == b'page2':
+        while page_counter == b'record':
             screen.clear()
             screen.show_raspberry()
 
@@ -79,14 +71,14 @@ if __name__ == '__main__':
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
-                    file_video, file_sound, \
-                        file_distance, file_gps = file_manager.start_recording(id_cyclist, get_date_time_stringify())
-                    microphone.start_recording(file_sound)
+                    file_video, file_distance, \
+                        file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
+
+                    camera.set_config(config)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
                     screen.show_recording()
-                    screen.show_microphone()
 
                     while record is True:
                         stop = screen.read()
@@ -94,34 +86,32 @@ if __name__ == '__main__':
 
                         if stop == b'stop':
                             record = False
-                            page_counter = b'page2'
+                            page_counter = b'record'
 
-                        if stop == b'page1':
+                        if stop == b'home':
                             record = False
                             page_counter = b''
 
-                    microphone.stop_recording()
                     camera.stop_recording()
                     lidar.stop_recording()
                     gps.stop_recording()
                     screen.clear()
 
-                if start == b'page1':  # In/out page1
+                if start == b'home':  # In/out page1
                     page_counter = b''
 
             record = True
             start = b''
 
-        while page_counter == b'page3':
-            # page 3 (setup)
+        while page_counter == b'setup':
             format_serial = screen.read()
 
-            if format_serial == b'page1':  # In/out page 2
+            if format_serial == b'home':  # In/out page 2
                 page_counter = b''
             elif format_serial == b'in' or format_serial == b'cm':
                 config.set_unit(format_serial)
 
-        while page_counter == b'page4':
+        while page_counter == b'format':
             # Settings (resolution, distance, export, convert)
             screen.set_distance(config.get_distance_edge())
 
@@ -134,7 +124,7 @@ if __name__ == '__main__':
             except:
                 pass
 
-            if capture_serial == b'page1':
+            if capture_serial == b'home':
                 page_counter = b''
             elif capture_serial == b'capture':
                 distance = lidar.read_distance_to_edge()
@@ -143,12 +133,14 @@ if __name__ == '__main__':
             elif capture_serial == b'convert':
                 screen.convert_start()
                 try:
+                    file_manager.delete_export_files()
                     converter = VideoConverter(file_manager.get_video_sound_tuples())
                     converter.convert_videos()
                     screen.convert_end()
                 except:
                     screen.convert_error()
             elif capture_serial == b'export':
+                screen.export_start()
                 try:
                     exporter.export(file_manager)
                     screen.export_end()
@@ -157,10 +149,10 @@ if __name__ == '__main__':
             elif config.is_valid_width(capture_serial):
                 config.set_resolution(capture_serial)
 
-        while page_counter == b'page5':
-            # page 5  (delete files)
+        while page_counter == b'delete':
+
             delete_serial = screen.read()
-            if delete_serial == b'page1':
+            if delete_serial == b'home':
                 page_counter = b''
             elif delete_serial == b'delete':
                 screen.delete_start()

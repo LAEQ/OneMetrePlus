@@ -1,18 +1,19 @@
 project:
   home: "/home/pi/capteur-henao"
-  capture: "/home/pi/captures"
+  capture: "/home/pi/captures/"
+  id_cyclist: "ID2_C2"
 camera:
   frame_rate: 25
   resolution:
     small:
-      width: 400
-      height: 300
+      width: 426
+      height: 240
     medium:
-      width: 600
-      height: 450
+      width: 768
+      height: 432
     large:
-      width: 800
-      height: 600
+      width: 960
+      height: 540
 lidar:
   unit:
     cm: 1
