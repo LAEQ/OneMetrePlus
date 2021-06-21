@@ -11,7 +11,7 @@ A multifunctional open source sensor for bicycles based on raspberry pi.
 ## Our recommendation
 ### Systemd service  
 
-To start the program after login, we use systemd to managed the python main script.
+To start the program after login, we use systemd to manage the python main script.
 
 You must create a file with the following configuration accordingly with your setup. 
 
