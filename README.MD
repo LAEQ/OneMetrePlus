@@ -2,7 +2,7 @@
 
 A multifunctional open source sensor for bicycles based on raspberry pi
 
-<a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png">
+<a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png" width="400"/>
 
 ## Systemd service  
 
