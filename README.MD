@@ -6,7 +6,7 @@ A multifunctional open source sensor for bicycles based on raspberry pi.
 <a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Schema.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Schema.png" width="800"/>
 Connection diagram
 
-## Requirements
+
 
   
 ## Our recommendation
@@ -83,3 +83,13 @@ export PROJECT_HOME=/home/pi/capteur-henao
 export CAPTURE_HOME=/home/pi/captures
 export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
 ```
+  
+  ## Requirements
+
+| # | version |
+| --- | --- |
+| pyserial  | 3.5 |
+| multiprocess  | 0.70.11.1|
+| path  | 15.1.2 |
+| pynmea2  | 1.18.0 | 
+| PyYAML  | 5.4.1 |
