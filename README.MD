@@ -2,7 +2,7 @@
 
 A multifunctional open source sensor for bicycles based on raspberry pi.
 
-<a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png" width="400"/>
+<a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png" width="500"/>
   <a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Plan_One_metre_plus.png">
   <img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Plan_One_metre_plus.png" width="400"/>
 <a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Schema.png">
