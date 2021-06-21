@@ -84,7 +84,7 @@ export CAPTURE_HOME=/home/pi/captures
 export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
 ```
   
-  ## Requirements
+  ## Required libraries
 
 | # | version |
 | --- | --- |
