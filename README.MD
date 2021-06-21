@@ -2,6 +2,8 @@
 
 A multifunctional open source sensor for bicycles based on raspberry pi
 
+<a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png">
+
 ## Systemd service  
 
 To start the program after login, we use systemd to managed the python main script.
