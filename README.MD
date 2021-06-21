@@ -1,7 +1,6 @@
-# Capture Raspberry Pi project
+# One Metre Plus (1m+)
 
-Raspberry project for recording traffic during a bike ride.
-
+A multifunctional open source sensor for bicycles based on raspberry pi
 
 ## Systemd service  
 
