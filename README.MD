@@ -1,8 +1,10 @@
 # One Metre Plus (1m+)
 
-A multifunctional open source sensor for bicycles based on raspberry pi
+A multifunctional open source sensor for bicycles based on raspberry pi.
 
 <a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Logo_One_Meter_Plus.png" width="400"/>
+
+Connection diagram
   <a href="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Schema.png"><img src="https://github.com/LAEQ/OneMetrePlus/blob/master/ressources/Schema.png" width="800"/>
 
 ## Systemd service  
