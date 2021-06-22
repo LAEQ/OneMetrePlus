@@ -94,9 +94,7 @@ export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
 | PyYAML  | 5.4.1 |
   
 ## Software License
-  <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html"><img src="https://www.gnu.org/graphics/gplv3-127x51.png" width="100"/></a><br />
-    
-    The software of One Metre Plus is licensed under a <a rel="license" href="https://www.gnu.org/licenses/quick-guide-gplv3.html">GPLv3</a>.
+  <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html"><img src="https://www.gnu.org/graphics/gplv3-127x51.png" width="100"/></a><br />The software of One Metre Plus is licensed under a <a rel="license" href="https://www.gnu.org/licenses/quick-guide-gplv3.html">GPLv3</a>.
     
 
 ## 3D Model License
