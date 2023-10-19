@@ -17,7 +17,7 @@ import datetime as dt
 
 #Il faut verifier le nombre du port USB avant de proceder
 
-ser = serial.Serial("/dev/ttyUSB0", 115200)
+ser = serial.Serial("/dev/ttyUSB1", 115200)
 timestamp = dt.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 

@@ -39,6 +39,10 @@ class Screen:
         self._Mic = b'p12.pic=32'
         self._Mic2 = b'p12.pic=2'
 
+        # Switch Yellow / black
+        self._swt = b'p17.pic=49'
+        self._swt2 = b'p17.pic=2'
+
         self._P4 = b'p4.pic=7'  # image for distance < 100 cm  in the record page (Warning sign)
         self._P42 = b'p4.pic=8'  # image standard for indicator (black square)
 
@@ -102,6 +106,7 @@ class Screen:
         self.hide_recording()
         self.hide_raspberry()
         self.hide_gps()
+        self.hide_switch()
         self.show_distance_null()
         self.hide_warning()
 
@@ -122,6 +127,12 @@ class Screen:
 
     def hide_gps(self):
         self.serial.write(self._gp2 + self.eof)
+
+    def show_switch(self):
+        self.serial.write(self._swt + self.eof)
+    
+    def hide_switch(self):
+        self.serial.write(self._swt2 + self.eof)
 
     def show_recording(self):
         self.serial.write(self._P1 + self.eof)

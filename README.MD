@@ -78,7 +78,7 @@ python3 -m unittest discover
 
 #### Configuration .nanobashrc
 ```bash
-export PROJECT_HOME=/home/pi/capteur-henao
+export PROJECT_HOME=/home/pi/one_metre_plus
 export CAPTURE_HOME=/home/pi/captures
 export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME
 ```

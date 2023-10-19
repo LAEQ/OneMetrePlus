@@ -1,7 +1,7 @@
 project:
-  home: "/home/pi/capteur-henao"
+  home: "/home/pi/one_metre_plus"
   capture: "/home/pi/captures/"
-  id_cyclist: "ID2_C2"
+  id_cyclist: "ID1_C1"
 camera:
   frame_rate: 25
   resolution:
@@ -20,6 +20,6 @@ lidar:
     inch: 0.393701
   distance:
     warning: 100
-    max: 300
+    max: 500
 gps:
   period_capture: 300

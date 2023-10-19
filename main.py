@@ -20,6 +20,7 @@ Licence: GPLv3 - https://www.gnu.org/licenses/quick-guide-gplv3.html
 """
 import os
 from utils.camera import Camera
+from utils.switch import Switch
 from utils.export import Exporter
 from utils.gps import GPS
 from utils.microphone import Microphone
@@ -49,12 +50,13 @@ if __name__ == '__main__':
 
     file_manager = FileManager(config.capture_dir)
     camera = Camera()
-    screen = Screen(port="/dev/ttyUSB2")
-    lidar = Lidar(port="/dev/ttyUSB0", _config=config, _screen=screen)
-    gps = GPS("/dev/ttyUSB1", 9600, _screen=screen)
+    screen = Screen(port="/dev/ttyUSB1")
+    lidar = Lidar(port="/dev/ttyUSB2", _config=config, _screen=screen)
+    gps = GPS("/dev/ttyUSB0", 9600, _screen=screen)
+    switch = Switch(_screen=screen)
 
     screen.menu()
-    print("bandera 1")
+    
     while True:
         page_counter = screen.read()
         screen.set_date(get_date())
@@ -68,18 +70,20 @@ if __name__ == '__main__':
             while start == b'':
                 start = screen.read()
                 screen.set_time_recording(get_time())
+                print(start)
 
                 # start process of: camera, gps and distance sensor.
                 if start == b'start':
                     file_video, file_distance, \
-                        file_gps = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
-
+                        file_gps, file_switch = file_manager.start_recording(config.id_cyclist, get_date_time_stringify())
+                    
                     camera.set_config(config)
                     camera.start_recording(file_video)
                     lidar.start_recording(file_distance)
                     gps.start_recording(file_gps)
+                    switch.start_recording(file_switch)
                     screen.show_recording()
-
+                    
                     while record is True:
                         stop = screen.read()
                         screen.set_time_recording(get_time())
@@ -95,6 +99,7 @@ if __name__ == '__main__':
                     camera.stop_recording()
                     lidar.stop_recording()
                     gps.stop_recording()
+                    switch.stop_recording()
                     screen.clear()
 
                 if start == b'home':  # In/out page1
